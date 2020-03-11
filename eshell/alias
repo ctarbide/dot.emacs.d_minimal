@@ -1,0 +1,15 @@
+alias bl (pop-to-buffer-same-window (list-buffers-noselect))
+alias echo1-cmd echo $1
+alias echo1-elisp (princ (car eshell-command-arguments))
+alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
+alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
+alias gi git status; git branch -a; git remote -v
+alias git-diff-nocr git diff $* | perl -lpe's,\r,,'
+alias git-repack-and-prune git repack -d && git prune
+alias ll ls -alh $*
+alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
+alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
+alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
+alias new-eshell-at (let ((default-directory (expand-file-name (car eshell-command-arguments)))) (eshell t))
+alias rm-tilde rm -fv *~ .??*~
+alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
