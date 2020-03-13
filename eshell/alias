@@ -10,6 +10,5 @@ alias ll ls -alh $*
 alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
 alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
 alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
-alias new-eshell-at (let ((default-directory (expand-file-name (car eshell-command-arguments)))) (eshell t))
 alias rm-tilde rm -fv *~ .??*~
 alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*

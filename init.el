@@ -13,6 +13,9 @@
 
 (prefer-coding-system 'utf-8-unix)
 
+(setq indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
+
 (setenv "PAGER" "cat")
 (setenv "GIT_PAGER" "cat")
 
@@ -99,11 +102,10 @@
     (or (and bfn (abbreviate-file-name (file-name-directory bfn)))
         (and lbd (abbreviate-file-name lbd)))))
 
-(defun eshell-here ()
+(defun eshell-here-maybe-reuse-existing ()
   "Opens up a new shell in the directory associated with the
-  current buffer's file. The eshell is renamed to match that
-  directory to make multiple eshell windows easier."
-  (interactive)
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
   (let* ((parent (or
                   (associated-buffer-directory-name)
                   default-directory
@@ -123,10 +125,51 @@
       (insert "ls")
       (eshell-send-input))))
 
+(defun eshell-here-force-new ()
+  "Opens up a new shell in the directory associated with the
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
+  (let* ((parent (or
+                  (associated-buffer-directory-name)
+                  default-directory
+                  (error "could not determine parent directory")))
+         (height (/ (window-total-height) 3))
+         (name (car (last (split-string parent "/" t))))
+         (eshell-buffer-name (concat "*eshell: " name "*"))
+         (buffer (generate-new-buffer eshell-buffer-name)))
+    (select-window (split-window-vertically (- height)))
+    (switch-to-buffer buffer nil t)
+    (unless (derived-mode-p 'eshell-mode)
+      (eshell-mode))
+    (insert "ls")
+    (eshell-send-input)))
+
+(defun eshell-here (&optional arg)
+  "Opens up a new shell in the directory associated with the
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
+  (interactive "P")
+  (if arg (eshell-here-force-new) (eshell-here-maybe-reuse-existing)))
+
 (defun kill-buffer-dont-ask ()
   "as it name implies"
   (interactive)
   (kill-buffer))
+
+(defun eshell/new-eshell-at (arg)
+  "create a new eshell with the directory name in the buffer name"
+  (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
+  (let* ((dir (abbreviate-file-name (expand-file-name arg)))
+         (default-directory dir)
+         (name (car (last (split-string dir "/" t))))
+         (buf (generate-new-buffer (format "*eshell: %s*" name))))
+    (cl-assert (and buf (buffer-live-p buf)))
+    (pop-to-buffer-same-window buf)
+    (unless (derived-mode-p 'eshell-mode)
+      (eshell-mode))
+    (insert "ls")
+    (eshell-send-input)
+    buf))
 
 (global-set-key (kbd "C-x x") 'eshell-here)
 (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)

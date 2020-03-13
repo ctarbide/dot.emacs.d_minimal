@@ -1,4 +1,4 @@
-# -*- mode: org -*-
+# -*- mode:org -*-
 
 #+TITLE: Emacs Minimal Configuration
 #+STARTUP: indent
@@ -42,7 +42,7 @@ Taken from [[http://whattheemacsd.com/][whattheemacsd.com]].
 #+END_SRC
 * Tabs or spaces? Spaces!
 
-#+BEGIN_SRC 
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq indent-tabs-mode nil)
 (setq-default indent-tabs-mode nil)
 #+END_SRC
@@ -177,11 +177,10 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (or (and bfn (abbreviate-file-name (file-name-directory bfn)))
           (and lbd (abbreviate-file-name lbd)))))
 
-  (defun eshell-here ()
+  (defun eshell-here-maybe-reuse-existing ()
     "Opens up a new shell in the directory associated with the
-    current buffer's file. The eshell is renamed to match that
-    directory to make multiple eshell windows easier."
-    (interactive)
+  current buffer's file. The eshell is renamed to match that
+  directory to make multiple eshell windows easier."
     (let* ((parent (or
                     (associated-buffer-directory-name)
                     default-directory
@@ -201,10 +200,51 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
         (insert "ls")
         (eshell-send-input))))
 
+  (defun eshell-here-force-new ()
+    "Opens up a new shell in the directory associated with the
+  current buffer's file. The eshell is renamed to match that
+  directory to make multiple eshell windows easier."
+    (let* ((parent (or
+                    (associated-buffer-directory-name)
+                    default-directory
+                    (error "could not determine parent directory")))
+           (height (/ (window-total-height) 3))
+           (name (car (last (split-string parent "/" t))))
+           (eshell-buffer-name (concat "*eshell: " name "*"))
+           (buffer (generate-new-buffer eshell-buffer-name)))
+      (select-window (split-window-vertically (- height)))
+      (switch-to-buffer buffer nil t)
+      (unless (derived-mode-p 'eshell-mode)
+        (eshell-mode))
+      (insert "ls")
+      (eshell-send-input)))
+
+  (defun eshell-here (&optional arg)
+    "Opens up a new shell in the directory associated with the
+  current buffer's file. The eshell is renamed to match that
+  directory to make multiple eshell windows easier."
+    (interactive "P")
+    (if arg (eshell-here-force-new) (eshell-here-maybe-reuse-existing)))
+
   (defun kill-buffer-dont-ask ()
     "as it name implies"
     (interactive)
     (kill-buffer))
+
+  (defun eshell/new-eshell-at (arg)
+    "create a new eshell with the directory name in the buffer name"
+    (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
+    (let* ((dir (abbreviate-file-name (expand-file-name arg)))
+           (default-directory dir)
+           (name (car (last (split-string dir "/" t))))
+           (buf (generate-new-buffer (format "*eshell: %s*" name))))
+      (cl-assert (and buf (buffer-live-p buf)))
+      (pop-to-buffer-same-window buf)
+      (unless (derived-mode-p 'eshell-mode)
+        (eshell-mode))
+      (insert "ls")
+      (eshell-send-input)
+      buf))
 #+END_SRC
 
 And some key bindings:
@@ -234,7 +274,6 @@ alias ll ls -alh $*
 alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
 alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
 alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
-alias new-eshell-at (let ((default-directory (expand-file-name (car eshell-command-arguments)))) (eshell t))
 alias rm-tilde rm -fv *~ .??*~
 alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
 #+END_SRC
