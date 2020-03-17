@@ -120,10 +120,7 @@ directory to make multiple eshell windows easier."
     (select-window window)
     (switch-to-buffer buffer nil t)
     (unless (derived-mode-p 'eshell-mode)
-      (eshell-mode))
-    (when (not buffer-already-exist)
-      (insert "ls")
-      (eshell-send-input))))
+      (eshell-mode))))
 
 (defun eshell-here-force-new ()
   "Opens up a new shell in the directory associated with the
@@ -140,9 +137,7 @@ directory to make multiple eshell windows easier."
     (select-window (split-window-vertically (- height)))
     (switch-to-buffer buffer nil t)
     (unless (derived-mode-p 'eshell-mode)
-      (eshell-mode))
-    (insert "ls")
-    (eshell-send-input)))
+      (eshell-mode))))
 
 (defun eshell-here (&optional arg)
   "Opens up a new shell in the directory associated with the
@@ -167,8 +162,6 @@ directory to make multiple eshell windows easier."
     (pop-to-buffer-same-window buf)
     (unless (derived-mode-p 'eshell-mode)
       (eshell-mode))
-    (insert "ls")
-    (eshell-send-input)
     buf))
 
 (global-set-key (kbd "C-x x") 'eshell-here)

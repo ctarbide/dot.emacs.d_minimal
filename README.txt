@@ -1,4 +1,4 @@
-# -*- mode:org -*-
+# -*- mode:org; coding:utf-8-unix -*-
 
 #+TITLE: Emacs Minimal Configuration
 #+STARTUP: indent
@@ -195,10 +195,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (select-window window)
       (switch-to-buffer buffer nil t)
       (unless (derived-mode-p 'eshell-mode)
-        (eshell-mode))
-      (when (not buffer-already-exist)
-        (insert "ls")
-        (eshell-send-input))))
+        (eshell-mode))))
 
   (defun eshell-here-force-new ()
     "Opens up a new shell in the directory associated with the
@@ -215,9 +212,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (select-window (split-window-vertically (- height)))
       (switch-to-buffer buffer nil t)
       (unless (derived-mode-p 'eshell-mode)
-        (eshell-mode))
-      (insert "ls")
-      (eshell-send-input)))
+        (eshell-mode))))
 
   (defun eshell-here (&optional arg)
     "Opens up a new shell in the directory associated with the
@@ -242,8 +237,6 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (pop-to-buffer-same-window buf)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
-      (insert "ls")
-      (eshell-send-input)
       buf))
 #+END_SRC
 
