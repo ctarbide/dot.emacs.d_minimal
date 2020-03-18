@@ -256,10 +256,13 @@ Just a simple debuging message.
 
 #+BEGIN_SRC text :tangle eshell/alias
 alias bl (pop-to-buffer-same-window (list-buffers-noselect))
+alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
 alias echo1-cmd echo $1
 alias echo1-elisp (princ (car eshell-command-arguments))
 alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
+alias el-other-window (pop-to-buffer (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))) t)
 alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
+alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
 alias gi git status; git branch -a; git remote -v
 alias git-diff-nocr git diff $* | perl -lpe's,\r,,'
 alias git-repack-and-prune git repack -d && git prune
