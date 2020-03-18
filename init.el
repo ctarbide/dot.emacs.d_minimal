@@ -7,6 +7,9 @@
   (when (file-exists-p custom-settings)
     (load-file custom-settings)))
 
+(when (string-prefix-p (expand-file-name (format "%s/bin" (getenv "emacs_dir"))) default-directory t)
+  (setq default-directory (expand-file-name "~")))
+
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))

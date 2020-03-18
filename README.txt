@@ -14,7 +14,6 @@ dependencies.
 Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
 
 * Preamble
-
 #+BEGIN_SRC emacs-lisp :tangle init.el
   ;; -*- mode:emacs-lisp; coding:utf-8; lexical-binding:t -*-
 
@@ -25,7 +24,11 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
     (when (file-exists-p custom-settings)
       (load-file custom-settings)))
 #+END_SRC
-
+* Cd to a more convenient place
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (when (string-prefix-p (expand-file-name (format "%s/bin" (getenv "emacs_dir"))) default-directory t)
+    (setq default-directory (expand-file-name "~")))
+#+END_SRC
 * Remove distractions
 
 Taken from [[http://whattheemacsd.com/][whattheemacsd.com]].
