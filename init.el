@@ -33,9 +33,11 @@
  '(show-paren-mode t)
  '(show-paren-when-point-inside-paren t))
 
-(add-hook 'after-init-hook '(lambda () (load-theme 'wombat t)))
-(when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
-  (add-hook 'window-setup-hook '(lambda () (load-theme 'wombat t))))
+(when (equal custom-known-themes '(user changed))
+  (load-theme 'wombat t t)
+  (add-hook 'after-init-hook '(lambda () (load-theme (car custom-known-themes) t)))
+  (when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
+    (add-hook 'window-setup-hook '(lambda () (load-theme (car custom-known-themes) t)))))
 
 (require 'eshell)
 

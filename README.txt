@@ -73,15 +73,26 @@ Taken from [[http://whattheemacsd.com/][whattheemacsd.com]].
 #+END_SRC
 
 * Load 'wombat theme
-
 It is such a nice theme.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(add-hook 'after-init-hook '(lambda () (load-theme 'wombat t)))
-(when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
-  (add-hook 'window-setup-hook '(lambda () (load-theme 'wombat t))))
+  (when (equal custom-known-themes '(user changed))
+    (load-theme 'wombat t t)
+    (add-hook 'after-init-hook '(lambda () (load-theme (car custom-known-themes) t)))
+    (when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
+      (add-hook 'window-setup-hook '(lambda () (load-theme (car custom-known-themes) t)))))
 #+END_SRC
 
+It is possible to customize a theme using these commands in =~/.emacs.d/custom-settings.el=
+
+#+BEGIN_SRC emacs-lisp
+  (load-theme 'tango-dark t t)
+  (add-hook 'after-init-hook '(lambda () (enable-theme (car custom-known-themes))))
+#+END_SRC
+
+See also:
+- (describe-variable 'custom-enabled-themes)
+- (describe-function 'disable-theme)
 * Eshell setup
 
 Forget about silly shells, use an elisp enabled ultra powerful shell.
