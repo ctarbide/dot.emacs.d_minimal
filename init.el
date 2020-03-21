@@ -35,9 +35,9 @@
 
 (when (equal custom-known-themes '(user changed))
   (load-theme 'wombat t t)
-  (add-hook 'after-init-hook '(lambda () (load-theme (car custom-known-themes) t)))
+  (add-hook 'after-init-hook '(lambda () (enable-theme (car custom-known-themes))))
   (when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
-    (add-hook 'window-setup-hook '(lambda () (load-theme (car custom-known-themes) t)))))
+    (add-hook 'window-setup-hook '(lambda () (enable-theme (car custom-known-themes))))))
 
 (require 'eshell)
 
