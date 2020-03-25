@@ -3,7 +3,7 @@
 ;; WARNING: This is generated automatically from README.txt using
 ;; Org-Mode. All changes here will be lost, eventually.
 
-(let ((custom-settings (expand-file-name "~/.emacs.d/custom-settings.el")))
+(let ((custom-settings (expand-file-name "custom-settings.el" user-emacs-directory)))
   (when (file-exists-p custom-settings)
     (load-file custom-settings)))
 

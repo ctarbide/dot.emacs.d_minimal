@@ -20,7 +20,7 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
   ;; WARNING: This is generated automatically from README.txt using
   ;; Org-Mode. All changes here will be lost, eventually.
 
-  (let ((custom-settings (expand-file-name "~/.emacs.d/custom-settings.el")))
+  (let ((custom-settings (expand-file-name "custom-settings.el" user-emacs-directory)))
     (when (file-exists-p custom-settings)
       (load-file custom-settings)))
 #+END_SRC
@@ -83,7 +83,7 @@ It is such a nice theme.
       (add-hook 'window-setup-hook '(lambda () (enable-theme (car custom-known-themes))))))
 #+END_SRC
 
-It is possible to customize a theme using these commands in =~/.emacs.d/custom-settings.el=
+It is possible to customize a theme using these commands in =custom-settings.el=
 
 #+BEGIN_SRC emacs-lisp
   (load-theme 'tango-dark t t)
