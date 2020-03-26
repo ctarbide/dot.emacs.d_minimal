@@ -25,8 +25,10 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
       (load-file custom-settings)))
 #+END_SRC
 * Cd to a more convenient place
+On MS Windows =emacs_dir= is a special variable, see [[info:emacs#Misc Variables][Misc Variables]]
+for more information.
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (when (string-prefix-p (expand-file-name (format "%s/bin" (getenv "emacs_dir"))) default-directory t)
+  (when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
     (setq default-directory (expand-file-name "~")))
 #+END_SRC
 * Remove distractions
