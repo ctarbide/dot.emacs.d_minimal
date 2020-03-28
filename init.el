@@ -7,7 +7,7 @@
   (when (file-exists-p custom-settings)
     (load-file custom-settings)))
 
-(when (string-prefix-p (expand-file-name (format "%s/bin" (getenv "emacs_dir"))) default-directory t)
+(when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
   (setq default-directory (expand-file-name "~")))
 
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -163,6 +163,19 @@ directory to make multiple eshell windows easier."
          (default-directory dir)
          (name (car (last (split-string dir "/" t))))
          (buf (generate-new-buffer (format "*eshell: %s*" name))))
+    (cl-assert (and buf (buffer-live-p buf)))
+    (pop-to-buffer-same-window buf)
+    (unless (derived-mode-p 'eshell-mode)
+      (eshell-mode))
+    buf))
+
+(defun eshell/get-eshell-at (arg)
+  "get or create a new eshell with the directory name in the buffer name"
+  (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
+  (let* ((dir (abbreviate-file-name (expand-file-name arg)))
+         (default-directory dir)
+         (name (car (last (split-string dir "/" t))))
+         (buf (get-buffer-create (format "*eshell: %s*" name))))
     (cl-assert (and buf (buffer-live-p buf)))
     (pop-to-buffer-same-window buf)
     (unless (derived-mode-p 'eshell-mode)
