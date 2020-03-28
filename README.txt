@@ -254,6 +254,19 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
       buf))
+
+  (defun eshell/get-eshell-at (arg)
+    "get or create a new eshell with the directory name in the buffer name"
+    (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
+    (let* ((dir (abbreviate-file-name (expand-file-name arg)))
+           (default-directory dir)
+           (name (car (last (split-string dir "/" t))))
+           (buf (get-buffer-create (format "*eshell: %s*" name))))
+      (cl-assert (and buf (buffer-live-p buf)))
+      (pop-to-buffer-same-window buf)
+      (unless (derived-mode-p 'eshell-mode)
+        (eshell-mode))
+      buf))
 #+END_SRC
 
 And some key bindings:
