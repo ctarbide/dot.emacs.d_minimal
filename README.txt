@@ -199,13 +199,13 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
   directory to make multiple eshell windows easier."
     (let* ((parent (or
                     (associated-buffer-directory-name)
-                    default-directory
+                    (and (bound-and-true-p default-directory)
+                         (abbreviate-file-name default-directory))
                     (error "could not determine parent directory")))
            (height (/ (window-total-height) 3))
            (name (car (last (split-string parent "/" t))))
            (eshell-buffer-name (concat "*eshell: " name "*"))
-           (buffer-already-exist (get-buffer eshell-buffer-name))
-           (buffer (or buffer-already-exist (get-buffer-create eshell-buffer-name)))
+           (buffer (get-buffer-create eshell-buffer-name))
            (window (or (get-buffer-window buffer 'visible)
                        (split-window-vertically (- height)))))
       (select-window window)
@@ -219,7 +219,8 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
   directory to make multiple eshell windows easier."
     (let* ((parent (or
                     (associated-buffer-directory-name)
-                    default-directory
+                    (and (bound-and-true-p default-directory)
+                         (abbreviate-file-name default-directory))
                     (error "could not determine parent directory")))
            (height (/ (window-total-height) 3))
            (name (car (last (split-string parent "/" t))))
