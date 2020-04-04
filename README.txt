@@ -100,24 +100,31 @@ See also:
 Forget about silly shells, use an elisp enabled ultra powerful shell.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(require 'eshell)
+  (require 'eshell)
 
-(setq eshell-buffer-maximum-lines 10000)
-(add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+  (setq eshell-buffer-maximum-lines 10000)
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
 
-(setq eshell-history-size 1000) ;; default is 128
+  ;; (memq system-type '(ms-dos windows-nt))
+  (when (not (eshell-under-windows-p))
+    (add-to-list 'eshell-modules-list 'eshell-tramp))
 
-(add-hook
- 'eshell-mode-hook
- (lambda ()
-   (setq
-    eshell-prefer-lisp-functions t
-    pcomplete-cycle-completions nil
-    pcomplete-cycle-cutoff-length 0
-    pcomplete-dir-ignore nil
-    pcomplete-file-ignore nil
-    pcomplete-use-paring nil)))
+  (setq eshell-history-size 1000) ;; default is 128
+
+  (add-hook
+   'eshell-mode-hook
+   (lambda ()
+     (setq
+      eshell-prefer-lisp-functions t
+      pcomplete-cycle-completions nil
+      pcomplete-cycle-cutoff-length 0
+      pcomplete-dir-ignore nil
+      pcomplete-file-ignore nil
+      pcomplete-use-paring nil)))
 #+END_SRC
+
+** References
+- [[https://emacs.stackexchange.com/questions/5608/how-to-let-eshell-remember-sudo-password-for-two-minutes][how-to-let-eshell-remember-sudo-password-for-two-minutes]]
 
 * IDO
 

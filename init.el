@@ -44,6 +44,10 @@
 (setq eshell-buffer-maximum-lines 10000)
 (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
 
+;; (memq system-type '(ms-dos windows-nt))
+(when (not (eshell-under-windows-p))
+  (add-to-list 'eshell-modules-list 'eshell-tramp))
+
 (setq eshell-history-size 1000) ;; default is 128
 
 (add-hook
