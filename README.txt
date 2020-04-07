@@ -289,7 +289,10 @@ Just a simple debuging message.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (message "All done with %s!" "init.el")
 #+END_SRC
-* Some aliases
+* Some eshell aliases
+
+The aliases ='chmod= and ='mkdir= allows eshell to override elisp
+aliases (which are unrelated to eshell).
 
 #+BEGIN_SRC text :tangle eshell/alias
 alias bl (pop-to-buffer-same-window (list-buffers-noselect))
@@ -309,6 +312,8 @@ alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
 alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
 alias rm-tilde rm -fv *~ .??*~
 alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
+alias chmod *chmod $*
+alias mkdir *mkdir $*
 #+END_SRC
 * Automated Extraction
 See [[info:org#Batch%20execution][Batch Execution]].

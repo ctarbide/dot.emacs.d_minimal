@@ -15,3 +15,5 @@ alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
 alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
 alias rm-tilde rm -fv *~ .??*~
 alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
+alias chmod *chmod $*
+alias mkdir *mkdir $*
