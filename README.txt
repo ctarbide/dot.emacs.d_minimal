@@ -20,7 +20,8 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
   ;; WARNING: This is generated automatically from README.txt using
   ;; Org-Mode. All changes here will be lost, eventually.
 
-  (let ((custom-settings (expand-file-name "custom-settings.el" user-emacs-directory)))
+  (let* ((thisdir (file-name-directory (or load-file-name buffer-file-name)))
+         (custom-settings (concat thisdir "custom-settings.el")))
     (when (file-exists-p custom-settings)
       (load-file custom-settings)))
 #+END_SRC
@@ -275,6 +276,8 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
       buf))
+
+  (defalias 'eshell/e 'eshell/get-eshell-at)
 #+END_SRC
 
 And some key bindings:

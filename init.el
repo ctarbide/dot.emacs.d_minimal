@@ -3,7 +3,8 @@
 ;; WARNING: This is generated automatically from README.txt using
 ;; Org-Mode. All changes here will be lost, eventually.
 
-(let ((custom-settings (expand-file-name "custom-settings.el" user-emacs-directory)))
+(let* ((thisdir (file-name-directory (or load-file-name buffer-file-name)))
+       (custom-settings (concat thisdir "custom-settings.el")))
   (when (file-exists-p custom-settings)
     (load-file custom-settings)))
 
@@ -186,6 +187,8 @@ directory to make multiple eshell windows easier."
     (unless (derived-mode-p 'eshell-mode)
       (eshell-mode))
     buf))
+
+(defalias 'eshell/e 'eshell/get-eshell-at)
 
 (global-set-key (kbd "C-x x") 'eshell-here)
 (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
