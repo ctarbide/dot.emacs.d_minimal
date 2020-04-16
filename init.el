@@ -112,6 +112,14 @@
     (or (and bfn (abbreviate-file-name (file-name-directory bfn)))
         (and lbd (abbreviate-file-name lbd)))))
 
+(defun rtrim-and-remove-last-slash (path)
+  "as it's name implies"
+  (replace-regexp-in-string "[\\/[:space:]]+$" "" path nil nil nil))
+
+(defun unique-buffer-name-from-path (path)
+  (let ((p (rtrim-and-remove-last-slash path)))
+  (concat (substring (secure-hash 'sha1 p) 0 4) " " (car (last (split-string p "/" t))))))
+
 (defun eshell-here-maybe-reuse-existing ()
   "Opens up a new shell in the directory associated with the
 current buffer's file. The eshell is renamed to match that
@@ -122,7 +130,7 @@ directory to make multiple eshell windows easier."
                        (abbreviate-file-name default-directory))
                   (error "could not determine parent directory")))
          (height (/ (window-total-height) 3))
-         (name (car (last (split-string parent "/" t))))
+         (name (unique-buffer-name-from-path parent))
          (eshell-buffer-name (concat "*eshell: " name "*"))
          (buffer (get-buffer-create eshell-buffer-name))
          (window (or (get-buffer-window buffer 'visible)
@@ -142,7 +150,7 @@ directory to make multiple eshell windows easier."
                        (abbreviate-file-name default-directory))
                   (error "could not determine parent directory")))
          (height (/ (window-total-height) 3))
-         (name (car (last (split-string parent "/" t))))
+         (name (unique-buffer-name-from-path parent))
          (eshell-buffer-name (concat "*eshell: " name "*"))
          (buffer (generate-new-buffer eshell-buffer-name)))
     (select-window (split-window-vertically (- height)))
@@ -167,7 +175,7 @@ directory to make multiple eshell windows easier."
   (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
   (let* ((dir (abbreviate-file-name (expand-file-name arg)))
          (default-directory dir)
-         (name (car (last (split-string dir "/" t))))
+         (name (unique-buffer-name-from-path dir))
          (buf (generate-new-buffer (format "*eshell: %s*" name))))
     (cl-assert (and buf (buffer-live-p buf)))
     (pop-to-buffer-same-window buf)
@@ -180,7 +188,7 @@ directory to make multiple eshell windows easier."
   (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
   (let* ((dir (abbreviate-file-name (expand-file-name arg)))
          (default-directory dir)
-         (name (car (last (split-string dir "/" t))))
+         (name (unique-buffer-name-from-path dir))
          (buf (get-buffer-create (format "*eshell: %s*" name))))
     (cl-assert (and buf (buffer-live-p buf)))
     (pop-to-buffer-same-window buf)
