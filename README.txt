@@ -298,25 +298,28 @@ The aliases ='chmod= and ='mkdir= allows eshell to override elisp
 aliases (which are unrelated to eshell).
 
 #+BEGIN_SRC text :tangle eshell/alias
-alias bl (pop-to-buffer-same-window (list-buffers-noselect))
-alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
-alias echo1-cmd echo $1
-alias echo1-elisp (princ (car eshell-command-arguments))
-alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
-alias el-other-window (pop-to-buffer (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))) t)
-alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
-alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
-alias gi git status; git branch -a; git remote -v
-alias git-diff-nocr git diff $* | perl -lpe's,\r,,'
-alias git-repack-and-prune git repack -d && git prune
-alias ll ls -alh $*
-alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
-alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
-alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
-alias rm-tilde rm -fv *~ .??*~
-alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
-alias chmod *chmod $*
-alias mkdir *mkdir $*
+  alias bl (pop-to-buffer-same-window (list-buffers-noselect))
+  alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
+  alias echo1-cmd echo $1
+  alias echo1-elisp (princ (car eshell-command-arguments))
+  alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
+  alias el-other-window (pop-to-buffer (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))) t)
+  alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
+  alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
+  alias gi git status; git branch -a; git remote -v
+  alias git-diff-nocr git diff $* | perl -lpe's,\r,,'
+  alias git-repack-and-prune git repack -d && git prune
+  alias ll ls -alh $*
+  alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
+  alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
+  alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
+  alias rm-tilde rm -fv *~ .??*~
+  alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
+  alias chmod *chmod $*
+  alias mkdir *mkdir $*
+  alias echo *echo $*
+  alias locate *locate $*
+  alias clear-kill-ring-and-gc (progn (setq kill-ring nil) (garbage-collect))
 #+END_SRC
 * Automated Extraction
 See [[info:org#Batch%20execution][Batch Execution]].

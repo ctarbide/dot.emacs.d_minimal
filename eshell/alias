@@ -17,3 +17,6 @@ alias rm-tilde rm -fv *~ .??*~
 alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
 alias chmod *chmod $*
 alias mkdir *mkdir $*
+alias echo *echo $*
+alias locate *locate $*
+alias clear-kill-ring-and-gc (progn (setq kill-ring nil) (garbage-collect))
