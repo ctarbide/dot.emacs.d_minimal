@@ -1,7 +1,9 @@
-;; -*- mode:emacs-lisp; coding:utf-8; lexical-binding:t -*-
+;; -*- mode:emacs-lisp; coding:utf-8-unix; lexical-binding:t -*-
 
 ;; WARNING: This is generated automatically from README.txt using
 ;; Org-Mode. All changes here will be lost, eventually.
+
+;; Lastest revision at https://github.com/ctarbide/dot.emacs.d_minimal/blob/master/README.txt
 
 (let* ((thisdir (file-name-directory (or load-file-name buffer-file-name)))
        (custom-settings (concat thisdir "custom-settings.el")))
@@ -22,6 +24,14 @@
 
 (setenv "PAGER" "cat")
 (setenv "GIT_PAGER" "cat")
+
+;; configure git color with:
+;;  git config --global color.ui always
+;;  git config --global color.log always
+;;  git config --global color.diff always
+;;  git config --global color.status always
+;;  git config --global color.branch always
+;;  git config -l | *grep color
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

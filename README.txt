@@ -15,10 +15,12 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
 
 * Preamble
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  ;; -*- mode:emacs-lisp; coding:utf-8; lexical-binding:t -*-
+  ;; -*- mode:emacs-lisp; coding:utf-8-unix; lexical-binding:t -*-
 
   ;; WARNING: This is generated automatically from README.txt using
   ;; Org-Mode. All changes here will be lost, eventually.
+
+  ;; Lastest revision at https://github.com/ctarbide/dot.emacs.d_minimal/blob/master/README.txt
 
   (let* ((thisdir (file-name-directory (or load-file-name buffer-file-name)))
          (custom-settings (concat thisdir "custom-settings.el")))
@@ -37,27 +39,37 @@ for more information.
 Taken from [[http://whattheemacsd.com/][whattheemacsd.com]].
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 #+END_SRC
 
 * Prefer a sane encoding on all platforms
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(prefer-coding-system 'utf-8-unix)
+  (prefer-coding-system 'utf-8-unix)
 #+END_SRC
 * Tabs or spaces? Spaces!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(setq indent-tabs-mode nil)
-(setq-default indent-tabs-mode nil)
+  (setq indent-tabs-mode nil)
+  (setq-default indent-tabs-mode nil)
 #+END_SRC
 
 * Set some important environment variables
 
+https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using-a-pager/2183920
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(setenv "PAGER" "cat")
-(setenv "GIT_PAGER" "cat")
+  (setenv "PAGER" "cat")
+  (setenv "GIT_PAGER" "cat")
+
+  ;; configure git color with:
+  ;;  git config --global color.ui always
+  ;;  git config --global color.log always
+  ;;  git config --global color.diff always
+  ;;  git config --global color.status always
+  ;;  git config --global color.branch always
+  ;;  git config -l | *grep color
 #+END_SRC
 
 * Customization
@@ -134,9 +146,9 @@ C-f= and =C-x C-b= to fall back to standard minibuffer. More
 information in [[https://www.masteringemacs.org/article/introduction-to-ido-mode][Mastering Emacs Book]].
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode 1)
 #+END_SRC
 
 * Show Trailing Whitespaces
