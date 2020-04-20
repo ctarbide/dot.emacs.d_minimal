@@ -103,18 +103,6 @@
   (interactive)
   (set-buffer-file-coding-system 'utf-8-unix 't))
 
-(defun eshell/lspath-exec-path ()
-  "list path from exec-path"
-  (mapconcat 'identity exec-path "\n"))
-
-(defun eshell/lspath-path ()
-  "list path from PATH environment variable"
-  (mapconcat 'identity (split-string (getenv "PATH") path-separator) "\n"))
-
-(defun eshell/lspath-eshell-path-env ()
-  "list path from eshell-path-env variable"
-  (mapconcat 'identity (split-string eshell-path-env path-separator) "\n"))
-
 (defun associated-buffer-directory-name ()
   "get a file name associated with the buffer"
   (let ((bfn (buffer-file-name))
@@ -128,7 +116,38 @@
 
 (defun unique-buffer-name-from-path (path)
   (let ((p (rtrim-and-remove-last-slash path)))
-  (concat (substring (secure-hash 'sha1 p) 0 4) " " (car (last (split-string p "/" t))))))
+    (concat (substring (secure-hash 'sha1 p) 0 4) " " (car (last (split-string p "/" t))))))
+
+(defun pop-to-ansi-term-line-mode (buffer-name &rest args)
+  "pop-to-buffer-same-window and ansi-term, use C-c C-k to use char-mode, C-x C-j to bring back line-mode"
+  (pop-to-buffer-same-window
+   (with-current-buffer
+       (apply 'term-ansi-make-term
+              (or buffer-name (concat "*" (unique-buffer-name-from-path (car args)) "*"))
+              (car args) nil (cdr args))
+     (current-buffer))))
+
+(defun pop-to-ansi-term-char-mode (buffer-name &rest args)
+  "pop-to-buffer-same-window and ansi-term, use C-x C-j to use line-mode, C-c C-k to bring back char-mode"
+  (pop-to-buffer-same-window
+   (with-current-buffer
+       (apply 'term-ansi-make-term
+              (or buffer-name (concat "*" (unique-buffer-name-from-path (car args)) "*"))
+              (car args) nil (cdr args))
+     (term-char-mode)
+     (current-buffer))))
+
+(defun eshell/lspath-exec-path ()
+  "list path from exec-path"
+  (mapconcat 'identity exec-path "\n"))
+
+(defun eshell/lspath-path ()
+  "list path from PATH environment variable"
+  (mapconcat 'identity (split-string (getenv "PATH") path-separator) "\n"))
+
+(defun eshell/lspath-eshell-path-env ()
+  "list path from eshell-path-env variable"
+  (mapconcat 'identity (split-string eshell-path-env path-separator) "\n"))
 
 (defun eshell-here-maybe-reuse-existing ()
   "Opens up a new shell in the directory associated with the

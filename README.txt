@@ -185,26 +185,11 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
 * Nice Utilities and Key Bindings
 
-Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Howard Abrams]] for =eshell-here=. Here is a slightly
-"improved" version.
-
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (defun dos2unix ()
     "Say that hard goodby to CRLF"
     (interactive)
     (set-buffer-file-coding-system 'utf-8-unix 't))
-
-  (defun eshell/lspath-exec-path ()
-    "list path from exec-path"
-    (mapconcat 'identity exec-path "\n"))
-
-  (defun eshell/lspath-path ()
-    "list path from PATH environment variable"
-    (mapconcat 'identity (split-string (getenv "PATH") path-separator) "\n"))
-
-  (defun eshell/lspath-eshell-path-env ()
-    "list path from eshell-path-env variable"
-    (mapconcat 'identity (split-string eshell-path-env path-separator) "\n"))
 
   (defun associated-buffer-directory-name ()
     "get a file name associated with the buffer"
@@ -219,7 +204,46 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
 
   (defun unique-buffer-name-from-path (path)
     (let ((p (rtrim-and-remove-last-slash path)))
-    (concat (substring (secure-hash 'sha1 p) 0 4) " " (car (last (split-string p "/" t))))))
+      (concat (substring (secure-hash 'sha1 p) 0 4) " " (car (last (split-string p "/" t))))))
+
+  (defun pop-to-ansi-term-line-mode (buffer-name &rest args)
+    "pop-to-buffer-same-window and ansi-term, use C-c C-k to use char-mode, C-x C-j to bring back line-mode"
+    (pop-to-buffer-same-window
+     (with-current-buffer
+         (apply 'term-ansi-make-term
+                (or buffer-name (concat "*" (unique-buffer-name-from-path (car args)) "*"))
+                (car args) nil (cdr args))
+       (current-buffer))))
+
+  (defun pop-to-ansi-term-char-mode (buffer-name &rest args)
+    "pop-to-buffer-same-window and ansi-term, use C-x C-j to use line-mode, C-c C-k to bring back char-mode"
+    (pop-to-buffer-same-window
+     (with-current-buffer
+         (apply 'term-ansi-make-term
+                (or buffer-name (concat "*" (unique-buffer-name-from-path (car args)) "*"))
+                (car args) nil (cdr args))
+       (term-char-mode)
+       (current-buffer))))
+#+END_SRC
+
+* Eshell Utilities
+
+Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Howard Abrams]] for =eshell-here=. Here is a slightly
+"improved" version and minor variations.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+
+  (defun eshell/lspath-exec-path ()
+    "list path from exec-path"
+    (mapconcat 'identity exec-path "\n"))
+
+  (defun eshell/lspath-path ()
+    "list path from PATH environment variable"
+    (mapconcat 'identity (split-string (getenv "PATH") path-separator) "\n"))
+
+  (defun eshell/lspath-eshell-path-env ()
+    "list path from eshell-path-env variable"
+    (mapconcat 'identity (split-string eshell-path-env path-separator) "\n"))
 
   (defun eshell-here-maybe-reuse-existing ()
     "Opens up a new shell in the directory associated with the
@@ -303,8 +327,8 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
 And some key bindings:
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(global-set-key (kbd "C-x x") 'eshell-here)
-(global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
+  (global-set-key (kbd "C-x x") 'eshell-here)
+  (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
 #+END_SRC
 
 * All Done!
@@ -320,10 +344,14 @@ aliases (which are unrelated to eshell).
 #+BEGIN_SRC text :tangle eshell/alias
   alias bl (pop-to-buffer-same-window (list-buffers-noselect))
   alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
+  alias chmod *chmod $*
+  alias clear-kill-ring-and-gc (progn (setq kill-ring nil) (garbage-collect))
+  alias echo *echo $*
   alias echo1-cmd echo $1
   alias echo1-elisp (princ (car eshell-command-arguments))
   alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
   alias el-other-window (pop-to-buffer (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))) t)
+  alias emacs for i in ${eshell-flatten-list $*} {find-file $i}
   alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
   alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
   alias gi git status; git branch -a; git remote -v
@@ -331,15 +359,13 @@ aliases (which are unrelated to eshell).
   alias git-repack-and-prune git repack -d && git prune
   alias ll ls -alh $*
   alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
+  alias locate *locate $*
   alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
   alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
+  alias mkdir *mkdir $*
   alias rm-tilde rm -fv *~ .??*~
   alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
-  alias chmod *chmod $*
-  alias mkdir *mkdir $*
-  alias echo *echo $*
-  alias locate *locate $*
-  alias clear-kill-ring-and-gc (progn (setq kill-ring nil) (garbage-collect))
+  alias strip-whitespace-eol perl -lpi -e's,\s+$,,' $*
 #+END_SRC
 * Automated Extraction
 See [[info:org#Batch%20execution][Batch Execution]].
