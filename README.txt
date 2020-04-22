@@ -226,6 +226,15 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
        (current-buffer))))
 #+END_SRC
 
+'pop-to-ansi-term-* usage examples under eshell
+#+BEGIN_SRC sh
+  pop-to-ansi-term-char-mode $(generate-new-buffer-name "*top*") top
+  pop-to-ansi-term-char-mode () top
+  pop-to-ansi-term-char-mode () /usr/bin/top
+
+  pop-to-ansi-term-line-mode $(generate-new-buffer-name "*sh*") /bin/sh -c 'echo running $0; for i in "$@"; do echo "[$i]"; done' inline-script a 'b c' " d "
+#+END_SRC
+
 * Eshell Utilities
 
 Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Howard Abrams]] for =eshell-here=. Here is a slightly
