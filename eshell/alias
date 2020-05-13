@@ -8,6 +8,7 @@ alias echo1-elisp (princ (car eshell-command-arguments))
 alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
 alias el-other-window (pop-to-buffer (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))) t)
 alias emacs for i in ${eshell-flatten-list $*} {find-file $i}
+alias emacs-minimal-dark *emacs -Q --eval '(load-theme (quote tango-dark))' $*
 alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
 alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
 alias gi git status; git branch -a; git remote -v
@@ -22,3 +23,4 @@ alias mkdir *mkdir $*
 alias rm-tilde rm -fv *~ .??*~
 alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
 alias strip-whitespace-eol perl -lpi -e's,\s+$,,' $*
+alias unescape perl -MURI::Escape -lne'print uri_unescape($_)'

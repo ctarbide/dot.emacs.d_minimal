@@ -201,6 +201,7 @@ directory to make multiple eshell windows easier."
 
 (defun eshell/new-eshell-at (arg)
   "create a new eshell with the directory name in the buffer name"
+  (if (listp arg) (setq arg (car arg)))
   (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
   (let* ((dir (abbreviate-file-name (expand-file-name arg)))
          (default-directory dir)
@@ -214,6 +215,7 @@ directory to make multiple eshell windows easier."
 
 (defun eshell/get-eshell-at (arg)
   "get or create a new eshell with the directory name in the buffer name"
+  (if (listp arg) (setq arg (car arg)))
   (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
   (let* ((dir (abbreviate-file-name (expand-file-name arg)))
          (default-directory dir)

@@ -313,6 +313,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
 
   (defun eshell/new-eshell-at (arg)
     "create a new eshell with the directory name in the buffer name"
+    (if (listp arg) (setq arg (car arg)))
     (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
     (let* ((dir (abbreviate-file-name (expand-file-name arg)))
            (default-directory dir)
@@ -326,6 +327,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
 
   (defun eshell/get-eshell-at (arg)
     "get or create a new eshell with the directory name in the buffer name"
+    (if (listp arg) (setq arg (car arg)))
     (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
     (let* ((dir (abbreviate-file-name (expand-file-name arg)))
            (default-directory dir)
@@ -368,6 +370,7 @@ aliases (which are unrelated to eshell).
   alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
   alias el-other-window (pop-to-buffer (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))) t)
   alias emacs for i in ${eshell-flatten-list $*} {find-file $i}
+  alias emacs-minimal-dark *emacs -Q --eval '(load-theme (quote tango-dark))' $*
   alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
   alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
   alias gi git status; git branch -a; git remote -v
@@ -382,6 +385,7 @@ aliases (which are unrelated to eshell).
   alias rm-tilde rm -fv *~ .??*~
   alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
   alias strip-whitespace-eol perl -lpi -e's,\s+$,,' $*
+  alias unescape perl -MURI::Escape -lne'print uri_unescape($_)'
 #+END_SRC
 * Automated Extraction
 See [[info:org#Batch%20execution][Batch Execution]].
