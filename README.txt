@@ -14,7 +14,7 @@ dependencies.
 Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
 
 * Preamble
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp :padline no :tangle init.el
   ;; -*- mode:emacs-lisp; coding:utf-8-unix; lexical-binding:t -*-
 
   ;; WARNING: This is generated automatically from README.txt using
@@ -114,16 +114,16 @@ Forget about silly shells, use an elisp enabled ultra powerful shell.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (require 'eshell)
-
+  
   (setq eshell-buffer-maximum-lines 10000)
   (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-
+  
   ;; (memq system-type '(ms-dos windows-nt))
-  (when (not (eshell-under-windows-p))
+  (when (and (version<= "26" emacs-version) (not (eshell-under-windows-p)))
     (add-to-list 'eshell-modules-list 'eshell-tramp))
-
+  
   (setq eshell-history-size 1000) ;; default is 128
-
+  
   (add-hook
    'eshell-mode-hook
    (lambda ()
@@ -319,7 +319,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
            (default-directory dir)
            (name (unique-buffer-name-from-path dir))
            (buf (generate-new-buffer (format "*eshell: %s*" name))))
-      (cl-assert (and buf (buffer-live-p buf)))
+      ; (cl-assert (and buf (buffer-live-p buf)))
       (pop-to-buffer-same-window buf)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
@@ -333,7 +333,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
            (default-directory dir)
            (name (unique-buffer-name-from-path dir))
            (buf (get-buffer-create (format "*eshell: %s*" name))))
-      (cl-assert (and buf (buffer-live-p buf)))
+      ; (cl-assert (and buf (buffer-live-p buf)))
       (pop-to-buffer-same-window buf)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
@@ -359,7 +359,7 @@ Just a simple debuging message.
 The aliases ='chmod= and ='mkdir= allows eshell to override elisp
 aliases (which are unrelated to eshell).
 
-#+BEGIN_SRC text :tangle eshell/alias
+#+BEGIN_SRC text :padline no :tangle eshell/alias
   alias bl (pop-to-buffer-same-window (list-buffers-noselect))
   alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
   alias chmod *chmod $*

@@ -56,7 +56,7 @@
 (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
 
 ;; (memq system-type '(ms-dos windows-nt))
-(when (not (eshell-under-windows-p))
+(when (and (version<= "26" emacs-version) (not (eshell-under-windows-p)))
   (add-to-list 'eshell-modules-list 'eshell-tramp))
 
 (setq eshell-history-size 1000) ;; default is 128
@@ -207,7 +207,7 @@ directory to make multiple eshell windows easier."
          (default-directory dir)
          (name (unique-buffer-name-from-path dir))
          (buf (generate-new-buffer (format "*eshell: %s*" name))))
-    (cl-assert (and buf (buffer-live-p buf)))
+    ; (cl-assert (and buf (buffer-live-p buf)))
     (pop-to-buffer-same-window buf)
     (unless (derived-mode-p 'eshell-mode)
       (eshell-mode))
@@ -221,7 +221,7 @@ directory to make multiple eshell windows easier."
          (default-directory dir)
          (name (unique-buffer-name-from-path dir))
          (buf (get-buffer-create (format "*eshell: %s*" name))))
-    (cl-assert (and buf (buffer-live-p buf)))
+    ; (cl-assert (and buf (buffer-live-p buf)))
     (pop-to-buffer-same-window buf)
     (unless (derived-mode-p 'eshell-mode)
       (eshell-mode))
