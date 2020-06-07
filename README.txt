@@ -248,7 +248,6 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
 "improved" version and minor variations.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  
   (defun eshell/lspath-exec-path ()
     "list path from exec-path"
     (mapconcat 'identity exec-path "\n"))
@@ -316,10 +315,10 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
     (if (listp arg) (setq arg (car arg)))
     (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
     (let* ((dir (abbreviate-file-name (expand-file-name arg)))
-           (default-directory (expand-file-name dir))
+           (default-directory (file-name-as-directory (expand-file-name dir)))
            (name (unique-buffer-name-from-path dir))
            (buf (generate-new-buffer (format "*eshell: %s*" name))))
-      ; (cl-assert (and buf (buffer-live-p buf)))
+                                          ; (cl-assert (and buf (buffer-live-p buf)))
       (pop-to-buffer-same-window buf)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
@@ -330,10 +329,10 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
     (if (listp arg) (setq arg (car arg)))
     (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
     (let* ((dir (abbreviate-file-name (expand-file-name arg)))
-           (default-directory (expand-file-name dir))
+           (default-directory (file-name-as-directory (expand-file-name dir)))
            (name (unique-buffer-name-from-path dir))
            (buf (get-buffer-create (format "*eshell: %s*" name))))
-      ; (cl-assert (and buf (buffer-live-p buf)))
+                                          ; (cl-assert (and buf (buffer-live-p buf)))
       (pop-to-buffer-same-window buf)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
