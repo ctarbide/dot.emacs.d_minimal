@@ -248,19 +248,19 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
 "improved" version and minor variations.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-
+  
   (defun eshell/lspath-exec-path ()
     "list path from exec-path"
     (mapconcat 'identity exec-path "\n"))
-
+  
   (defun eshell/lspath-path ()
     "list path from PATH environment variable"
     (mapconcat 'identity (split-string (getenv "PATH") path-separator) "\n"))
-
+  
   (defun eshell/lspath-eshell-path-env ()
     "list path from eshell-path-env variable"
     (mapconcat 'identity (split-string eshell-path-env path-separator) "\n"))
-
+  
   (defun eshell-here-maybe-reuse-existing ()
     "Opens up a new shell in the directory associated with the
   current buffer's file. The eshell is renamed to match that
@@ -280,7 +280,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (switch-to-buffer buffer nil t)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))))
-
+  
   (defun eshell-here-force-new ()
     "Opens up a new shell in the directory associated with the
   current buffer's file. The eshell is renamed to match that
@@ -298,25 +298,25 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (switch-to-buffer buffer nil t)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))))
-
+  
   (defun eshell-here (&optional arg)
     "Opens up a new shell in the directory associated with the
   current buffer's file. The eshell is renamed to match that
   directory to make multiple eshell windows easier."
     (interactive "P")
     (if arg (eshell-here-force-new) (eshell-here-maybe-reuse-existing)))
-
+  
   (defun kill-buffer-dont-ask ()
     "as it name implies"
     (interactive)
     (kill-buffer))
-
+  
   (defun eshell/new-eshell-at (arg)
     "create a new eshell with the directory name in the buffer name"
     (if (listp arg) (setq arg (car arg)))
     (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
     (let* ((dir (abbreviate-file-name (expand-file-name arg)))
-           (default-directory dir)
+           (default-directory (expand-file-name dir))
            (name (unique-buffer-name-from-path dir))
            (buf (generate-new-buffer (format "*eshell: %s*" name))))
       ; (cl-assert (and buf (buffer-live-p buf)))
@@ -324,13 +324,13 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
       buf))
-
+  
   (defun eshell/get-eshell-at (arg)
     "get or create a new eshell with the directory name in the buffer name"
     (if (listp arg) (setq arg (car arg)))
     (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
     (let* ((dir (abbreviate-file-name (expand-file-name arg)))
-           (default-directory dir)
+           (default-directory (expand-file-name dir))
            (name (unique-buffer-name-from-path dir))
            (buf (get-buffer-create (format "*eshell: %s*" name))))
       ; (cl-assert (and buf (buffer-live-p buf)))
@@ -338,7 +338,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
       buf))
-
+  
   (defalias 'eshell/e 'eshell/get-eshell-at)
 #+END_SRC
 
