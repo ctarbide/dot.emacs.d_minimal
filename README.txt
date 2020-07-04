@@ -128,7 +128,6 @@ Forget about silly shells, use an elisp enabled ultra powerful shell.
    'eshell-mode-hook
    (lambda ()
      (setq
-      eshell-prefer-lisp-functions t
       pcomplete-cycle-completions nil
       pcomplete-cycle-cutoff-length 0
       pcomplete-dir-ignore nil
