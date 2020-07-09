@@ -51,15 +51,29 @@
     (add-hook 'window-setup-hook '(lambda () (enable-theme (car custom-known-themes))))))
 
 (require 'eshell)
+(require 'em-basic)
+(require 'em-unix)
 
 (setq eshell-buffer-maximum-lines 10000)
 (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
 
-;; (memq system-type '(ms-dos windows-nt))
-(when (and (version<= "26" emacs-version) (not (eshell-under-windows-p)))
-  (add-to-list 'eshell-modules-list 'eshell-tramp))
-
 (setq eshell-history-size 1000) ;; default is 128
+
+;; blacklist eshell non-standard sub-par re-implementations on
+;; non-windows systems
+(when (not (eshell-under-windows-p))
+  (fmakunbound 'eshell/cp)
+  (fmakunbound 'eshell/rm)
+  (fmakunbound 'eshell/mv)
+  (fmakunbound 'eshell/date)
+  (fmakunbound 'eshell/diff)
+  (fmakunbound 'eshell/grep)
+  (fmakunbound 'eshell/egrep)
+  (fmakunbound 'eshell/fgrep)
+  (fmakunbound 'eshell/echo)
+  (fmakunbound 'eshell/locate)
+  (fmakunbound 'eshell/sudo)
+  (fmakunbound 'eshell/du))
 
 (add-hook
  'eshell-mode-hook

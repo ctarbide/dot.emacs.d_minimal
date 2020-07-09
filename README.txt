@@ -110,19 +110,34 @@ See also:
 - (describe-function 'disable-theme)
 * Eshell setup
 
-Forget about silly shells, use an elisp enabled ultra powerful shell.
+Forget about silly shells, use an elisp enabled ultra powerful shell
+(if you can tolerate the awful parts).
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (require 'eshell)
+  (require 'em-basic)
+  (require 'em-unix)
   
   (setq eshell-buffer-maximum-lines 10000)
   (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
   
-  ;; (memq system-type '(ms-dos windows-nt))
-  (when (and (version<= "26" emacs-version) (not (eshell-under-windows-p)))
-    (add-to-list 'eshell-modules-list 'eshell-tramp))
-  
   (setq eshell-history-size 1000) ;; default is 128
+  
+  ;; blacklist eshell non-standard sub-par re-implementations on
+  ;; non-windows systems
+  (when (not (eshell-under-windows-p))
+    (fmakunbound 'eshell/cp)
+    (fmakunbound 'eshell/rm)
+    (fmakunbound 'eshell/mv)
+    (fmakunbound 'eshell/date)
+    (fmakunbound 'eshell/diff)
+    (fmakunbound 'eshell/grep)
+    (fmakunbound 'eshell/egrep)
+    (fmakunbound 'eshell/fgrep)
+    (fmakunbound 'eshell/echo)
+    (fmakunbound 'eshell/locate)
+    (fmakunbound 'eshell/sudo)
+    (fmakunbound 'eshell/du))
   
   (add-hook
    'eshell-mode-hook
@@ -354,15 +369,10 @@ Just a simple debuging message.
 #+END_SRC
 * Some eshell aliases
 
-The aliases ='chmod= and ='mkdir= allows eshell to override elisp
-aliases (which are unrelated to eshell).
-
 #+BEGIN_SRC text :padline no :tangle eshell/alias
   alias bl (pop-to-buffer-same-window (list-buffers-noselect))
   alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
-  alias chmod *chmod $*
   alias clear-kill-ring-and-gc (progn (setq kill-ring nil) (garbage-collect))
-  alias echo *echo $*
   alias echo1-cmd echo $1
   alias echo1-elisp (princ (car eshell-command-arguments))
   alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
@@ -376,10 +386,8 @@ aliases (which are unrelated to eshell).
   alias git-repack-and-prune git repack -d && git prune
   alias ll ls -alh $*
   alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
-  alias locate *locate $*
   alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
   alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
-  alias mkdir *mkdir $*
   alias rm-tilde rm -fv *~ .??*~
   alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
   alias strip-whitespace-eol perl -lpi -e's,\s+$,,' $*
