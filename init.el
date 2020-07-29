@@ -250,8 +250,10 @@ directory to make multiple eshell windows easier."
     (unless (derived-mode-p 'eshell-mode)
       (eshell-mode))
     buf))
+(put 'eshell/get-eshell-at 'eshell-no-numeric-conversions t)
 
 (defalias 'eshell/e 'eshell/get-eshell-at)
+(put 'eshell/e 'eshell-no-numeric-conversions t)
 
 (global-set-key (kbd "C-x x") 'eshell-here)
 (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)

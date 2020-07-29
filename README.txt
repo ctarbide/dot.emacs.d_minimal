@@ -362,8 +362,10 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
       buf))
+  (put 'eshell/get-eshell-at 'eshell-no-numeric-conversions t)
   
   (defalias 'eshell/e 'eshell/get-eshell-at)
+  (put 'eshell/e 'eshell-no-numeric-conversions t)
 #+END_SRC
 
 And some key bindings:
