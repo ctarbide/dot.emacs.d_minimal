@@ -53,6 +53,7 @@
 (require 'eshell)
 (require 'em-basic)
 (require 'em-unix)
+(require 'esh-var)
 
 (setq eshell-buffer-maximum-lines 10000)
 (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
@@ -121,6 +122,11 @@
 ;; (info-other-window "(org) Clean view")
 (setq org-hide-leading-stars t)
 (setq org-indent-mode t)
+
+(require 'org)
+(message "Using Org (org-mode) version %s" (org-version))
+(require 'ob-shell nil t)
+(require 'ob-perl nil t)
 
 (defun dos2unix ()
   "Say that hard goodby to CRLF"

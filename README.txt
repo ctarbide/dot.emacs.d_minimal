@@ -117,12 +117,13 @@ Forget about silly shells, use an elisp enabled ultra powerful shell
   (require 'eshell)
   (require 'em-basic)
   (require 'em-unix)
-  
+  (require 'esh-var)
+
   (setq eshell-buffer-maximum-lines 10000)
   (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-  
+
   (setq eshell-history-size 1000) ;; default is 128
-  
+
   ;; blacklist eshell non-standard sub-par re-implementations on
   ;; non-windows systems
   (when (not (eshell-under-windows-p))
@@ -149,7 +150,7 @@ Forget about silly shells, use an elisp enabled ultra powerful shell
     (fmakunbound 'eshell/time)
     (fmakunbound 'eshell/umask)
     (fmakunbound 'eshell/whoami))
-  
+
   (add-hook
    'eshell-mode-hook
    (lambda ()
@@ -198,15 +199,30 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
 * Org-Mode Customizations
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-;;(setq org-ellipsis " ● ● ●")
-;;(setq org-ellipsis " ○ ○ ○")
-(setq org-ellipsis " ◦◦◦")
+** Better ellipsis
 
-;; (info-other-window "(org) Clean view")
-(setq org-hide-leading-stars t)
-(setq org-indent-mode t)
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  ;;(setq org-ellipsis " ● ● ●")
+  ;;(setq org-ellipsis " ○ ○ ○")
+  (setq org-ellipsis " ◦◦◦")
 #+END_SRC
+
+** Some nice settings
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  ;; (info-other-window "(org) Clean view")
+  (setq org-hide-leading-stars t)
+  (setq org-indent-mode t)
+#+END_SRC
+
+** Pre-load org and some org-babel modules useful for org-babel-tangle
+
+#+begin_src emacs-lisp :tangle init.el
+  (require 'org)
+  (message "Using Org (org-mode) version %s" (org-version))
+  (require 'ob-shell nil t)
+  (require 'ob-perl nil t)
+#+end_src
 
 * Nice Utilities and Key Bindings
 
@@ -276,15 +292,15 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
   (defun eshell/lspath-exec-path ()
     "list path from exec-path"
     (mapconcat 'identity exec-path "\n"))
-  
+
   (defun eshell/lspath-path ()
     "list path from PATH environment variable"
     (mapconcat 'identity (split-string (getenv "PATH") path-separator) "\n"))
-  
+
   (defun eshell/lspath-eshell-path-env ()
     "list path from eshell-path-env variable"
     (mapconcat 'identity (split-string eshell-path-env path-separator) "\n"))
-  
+
   (defun eshell-here-maybe-reuse-existing ()
     "Opens up a new shell in the directory associated with the
   current buffer's file. The eshell is renamed to match that
@@ -304,7 +320,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (switch-to-buffer buffer nil t)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))))
-  
+
   (defun eshell-here-force-new ()
     "Opens up a new shell in the directory associated with the
   current buffer's file. The eshell is renamed to match that
@@ -322,19 +338,19 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (switch-to-buffer buffer nil t)
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))))
-  
+
   (defun eshell-here (&optional arg)
     "Opens up a new shell in the directory associated with the
   current buffer's file. The eshell is renamed to match that
   directory to make multiple eshell windows easier."
     (interactive "P")
     (if arg (eshell-here-force-new) (eshell-here-maybe-reuse-existing)))
-  
+
   (defun kill-buffer-dont-ask ()
     "as it name implies"
     (interactive)
     (kill-buffer))
-  
+
   (defun eshell/new-eshell-at (arg)
     "create a new eshell with the directory name in the buffer name"
     (if (listp arg) (setq arg (car arg)))
@@ -348,7 +364,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
       (unless (derived-mode-p 'eshell-mode)
         (eshell-mode))
       buf))
-  
+
   (defun eshell/get-eshell-at (arg)
     "get or create a new eshell with the directory name in the buffer name"
     (if (listp arg) (setq arg (car arg)))
@@ -363,7 +379,7 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
         (eshell-mode))
       buf))
   (put 'eshell/get-eshell-at 'eshell-no-numeric-conversions t)
-  
+
   (defalias 'eshell/e 'eshell/get-eshell-at)
   (put 'eshell/e 'eshell-no-numeric-conversions t)
 #+END_SRC
