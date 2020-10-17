@@ -77,6 +77,7 @@
   (fmakunbound 'eshell/grep)
   (fmakunbound 'eshell/ln)
   (fmakunbound 'eshell/locate)
+  (fmakunbound 'eshell/ls)
   (fmakunbound 'eshell/make)
   (fmakunbound 'eshell/mkdir)
   (fmakunbound 'eshell/mv)
