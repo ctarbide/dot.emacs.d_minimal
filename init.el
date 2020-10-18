@@ -79,6 +79,7 @@
   (fmakunbound 'eshell/locate)
   (fmakunbound 'eshell/ls)
   (fmakunbound 'eshell/make)
+  (fmakunbound 'eshell/man)
   (fmakunbound 'eshell/mkdir)
   (fmakunbound 'eshell/mv)
   (fmakunbound 'eshell/rm)

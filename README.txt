@@ -143,6 +143,7 @@ Forget about silly shells, use an elisp enabled ultra powerful shell
     (fmakunbound 'eshell/locate)
     (fmakunbound 'eshell/ls)
     (fmakunbound 'eshell/make)
+    (fmakunbound 'eshell/man)
     (fmakunbound 'eshell/mkdir)
     (fmakunbound 'eshell/mv)
     (fmakunbound 'eshell/rm)
@@ -400,7 +401,7 @@ Just a simple debuging message.
 * Some eshell aliases
 
 #+BEGIN_SRC text :padline no :tangle eshell/alias
-  alias bash-here (apply 'pop-to-ansi-term-char-mode nil (nconc '("bash") (eshell-flatten-list eshell-command-arguments)))
+  alias bash-here (apply 'pop-to-ansi-term-char-mode nil "bash" (eshell-flatten-list eshell-command-arguments))
   alias bl (pop-to-buffer-same-window (list-buffers-noselect))
   alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
   alias clear-kill-ring-and-gc (progn (setq kill-ring nil) (garbage-collect))
