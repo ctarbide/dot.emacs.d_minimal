@@ -14,6 +14,7 @@ dependencies.
 Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
 
 * Preamble
+
 #+BEGIN_SRC emacs-lisp :padline no :tangle init.el
   ;; -*- mode:emacs-lisp; coding:utf-8-unix; lexical-binding:t -*-
 
@@ -27,33 +28,45 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
     (when (file-exists-p custom-settings)
       (load-file custom-settings)))
 #+END_SRC
+
+
 * Cd to a more convenient place
+
 On MS Windows =emacs_dir= is a special variable, see [[info:emacs#Misc Variables][Misc Variables]]
 for more information.
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
     (setq default-directory (expand-file-name "~")))
 #+END_SRC
+
+
 * Remove distractions
 
-Taken from [[http://whattheemacsd.com/][whattheemacsd.com]].
+Taken from [[http://whattheemacsd.com/][whattheemacsd.com]] and [[https://www.sandeepnambiar.com/my-minimal-emacs-setup/][www.sandeepnambiar.com]].
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (if (fboundp 'blink-cursor-mode) (blink-cursor-mode 0))
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode 0))
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode 0))
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
 #+END_SRC
 
+
 * Prefer a sane encoding on all platforms
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (prefer-coding-system 'utf-8-unix)
 #+END_SRC
+
+
 * Tabs or spaces? Spaces!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (setq indent-tabs-mode nil)
   (setq-default indent-tabs-mode nil)
 #+END_SRC
+
 
 * Set some important environment variables
 
@@ -72,6 +85,7 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
   ;;  git config -l | *grep color
 #+END_SRC
 
+
 * Customization
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -87,7 +101,9 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
    '(show-paren-when-point-inside-paren t))
 #+END_SRC
 
+
 * Load 'wombat theme
+
 It is such a nice theme.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -106,8 +122,11 @@ It is possible to customize a theme using these commands in =custom-settings.el=
 #+END_SRC
 
 See also:
+
 - (describe-variable 'custom-enabled-themes)
 - (describe-function 'disable-theme)
+
+
 * Eshell setup
 
 Forget about silly shells, use an elisp enabled ultra powerful shell
@@ -164,8 +183,11 @@ Forget about silly shells, use an elisp enabled ultra powerful shell
       pcomplete-use-paring nil)))
 #+END_SRC
 
+
 ** References
+
 - [[https://emacs.stackexchange.com/questions/5608/how-to-let-eshell-remember-sudo-password-for-two-minutes][how-to-let-eshell-remember-sudo-password-for-two-minutes]]
+
 
 * IDO
 
@@ -178,6 +200,7 @@ information in [[https://www.masteringemacs.org/article/introduction-to-ido-mode
   (setq ido-everywhere t)
   (ido-mode 1)
 #+END_SRC
+
 
 * Show Trailing Whitespaces
 
@@ -199,6 +222,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
               (setq show-trailing-whitespace t))))
 #+END_SRC
 
+
 * Org-Mode Customizations
 
 ** Better ellipsis
@@ -209,6 +233,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
   (setq org-ellipsis " ◦◦◦")
 #+END_SRC
 
+
 ** Some nice settings
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -216,6 +241,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
   (setq org-hide-leading-stars t)
   (setq org-indent-mode t)
 #+END_SRC
+
 
 ** Pre-load org and some org-babel modules useful for org-babel-tangle
 
@@ -225,6 +251,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
   (require 'ob-shell nil t)
   (require 'ob-perl nil t)
 #+end_src
+
 
 * Nice Utilities and Key Bindings
 
@@ -285,6 +312,8 @@ Useful shortcuts:
 
   pop-to-ansi-term-line-mode $(generate-new-buffer-name "*sh*") /bin/sh -c 'echo running $0; for i in "$@"; do echo "[$i]"; done' inline-script a 'b c' " d "
 #+END_SRC
+
+
 * Eshell Utilities
 
 Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Howard Abrams]] for =eshell-here=. Here is a slightly
@@ -393,11 +422,16 @@ And some key bindings:
   (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
 #+END_SRC
 
+
 * All Done!
+
 Just a simple debuging message.
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (message "All done with %s!" "init.el")
 #+END_SRC
+
+
 * Some eshell aliases
 
 #+BEGIN_SRC text :padline no :tangle eshell/alias
@@ -414,6 +448,7 @@ Just a simple debuging message.
   alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
   alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
   alias gi git status; git branch -a; git remote -v
+  alias git git -c color.ui=always $*
   alias git-diff-nocr git diff $* | perl -lpe's,\r,,'
   alias git-repack-and-prune git repack -d && git prune
   alias ll ls -alhF --color=auto $*
@@ -425,5 +460,9 @@ Just a simple debuging message.
   alias strip-whitespace-eol perl -lpi -e's,\s+$,,' $*
   alias unescape perl -MURI::Escape -lne'print uri_unescape($_)'
 #+END_SRC
+
+
 * Automated Extraction
+
 See [[info:org#Batch%20execution][Batch Execution]].
+

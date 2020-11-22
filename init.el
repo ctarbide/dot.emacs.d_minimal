@@ -13,9 +13,10 @@
 (when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
   (setq default-directory (expand-file-name "~")))
 
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'blink-cursor-mode) (blink-cursor-mode 0))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode 0))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode 0))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
 
 (prefer-coding-system 'utf-8-unix)
 
