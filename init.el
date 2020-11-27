@@ -6,9 +6,12 @@
 ;; Lastest revision at https://github.com/ctarbide/dot.emacs.d_minimal/blob/master/README.txt
 
 (let* ((thisdir (file-name-directory (or load-file-name buffer-file-name)))
-       (custom-settings (concat thisdir "custom-settings.el")))
+       (custom-settings (expand-file-name "custom-settings.el" thisdir)))
   (when (file-exists-p custom-settings)
     (load-file custom-settings)))
+
+(setq gc-cons-threshold 50000000)
+(setq large-file-warning-threshold 100000000)
 
 (when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
   (setq default-directory (expand-file-name "~")))
@@ -266,5 +269,16 @@ directory to make multiple eshell windows easier."
 
 (global-set-key (kbd "C-x x") 'eshell-here)
 (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
+
+(global-hl-line-mode 0)
+(line-number-mode +1)
+(global-display-line-numbers-mode +1)
+(column-number-mode t)
+(size-indication-mode 0)
+
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
 
 (message "All done with %s!" "init.el")

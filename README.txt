@@ -15,7 +15,7 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
 
 * Preamble
 
-#+BEGIN_SRC emacs-lisp :padline no :tangle init.el
+#+BEGIN_SRC emacs-lisp :tangle init.el
   ;; -*- mode:emacs-lisp; coding:utf-8-unix; lexical-binding:t -*-
 
   ;; WARNING: This is generated automatically from README.txt using
@@ -24,10 +24,26 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
   ;; Lastest revision at https://github.com/ctarbide/dot.emacs.d_minimal/blob/master/README.txt
 
   (let* ((thisdir (file-name-directory (or load-file-name buffer-file-name)))
-         (custom-settings (concat thisdir "custom-settings.el")))
+         (custom-settings (expand-file-name "custom-settings.el" thisdir)))
     (when (file-exists-p custom-settings)
       (load-file custom-settings)))
 #+END_SRC
+
+
+* Some Improvements
+
+- https://www.sandeepnambiar.com/my-minimal-emacs-setup/
+
+- As of 27.1.50:
+
+  - gc-cons-threshold :: it was 800000 (#o3032400, #xc3500) bytes
+
+  - large-file-warning-threshold :: 10000000 (#o46113200, #x989680)
+
+#+begin_src emacs-lisp :tangle init.el
+  (setq gc-cons-threshold 50000000)
+  (setq large-file-warning-threshold 100000000)
+#+end_src
 
 
 * Cd to a more convenient place
@@ -421,6 +437,31 @@ And some key bindings:
   (global-set-key (kbd "C-x x") 'eshell-here)
   (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
 #+END_SRC
+
+
+* Other (Sandeep Nambiar)
+
+- https://www.sandeepnambiar.com/my-minimal-emacs-setup/
+
+** line numbers
+
+#+begin_src emacs-lisp :tangle init.el
+  (global-hl-line-mode 0)
+  (line-number-mode +1)
+  (global-display-line-numbers-mode +1)
+  (column-number-mode t)
+  (size-indication-mode 0)
+#+end_src
+
+
+** current file's name to model-line
+
+#+begin_src emacs-lisp :tangle init.el
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))))
+#+end_src
 
 
 * All Done!
