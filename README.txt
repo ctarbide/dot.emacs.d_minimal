@@ -62,7 +62,6 @@ for more information.
 Taken from [[http://whattheemacsd.com/][whattheemacsd.com]] and [[https://www.sandeepnambiar.com/my-minimal-emacs-setup/][www.sandeepnambiar.com]].
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (if (fboundp 'blink-cursor-mode) (blink-cursor-mode 0))
   (if (fboundp 'menu-bar-mode) (menu-bar-mode 0))
   (if (fboundp 'tool-bar-mode) (tool-bar-mode 0))
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
@@ -81,6 +80,13 @@ Taken from [[http://whattheemacsd.com/][whattheemacsd.com]] and [[https://www.sa
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (setq indent-tabs-mode nil)
   (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+
+* Original value of 70 is a bit too narrow
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (set-fill-column 90)
 #+END_SRC
 
 
@@ -110,7 +116,7 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
-   '(confirm-kill-emacs (quote yes-or-no-p))
+   '(confirm-kill-emacs 'y-or-n-p)
    '(inhibit-startup-screen t)
    '(show-paren-delay 0.0)
    '(show-paren-mode t)
@@ -429,13 +435,6 @@ Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Ho
 
   (defalias 'eshell/e 'eshell/get-eshell-at)
   (put 'eshell/e 'eshell-no-numeric-conversions t)
-#+END_SRC
-
-And some key bindings:
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-  (global-set-key (kbd "C-x x") 'eshell-here)
-  (global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
 #+END_SRC
 
 

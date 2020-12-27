@@ -16,7 +16,6 @@
 (when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
   (setq default-directory (expand-file-name "~")))
 
-(if (fboundp 'blink-cursor-mode) (blink-cursor-mode 0))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode 0))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode 0))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
@@ -25,6 +24,8 @@
 
 (setq indent-tabs-mode nil)
 (setq-default indent-tabs-mode nil)
+
+(set-fill-column 90)
 
 (setenv "PAGER" "cat")
 (setenv "GIT_PAGER" "cat")
@@ -42,7 +43,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(confirm-kill-emacs (quote yes-or-no-p))
+ '(confirm-kill-emacs 'y-or-n-p)
  '(inhibit-startup-screen t)
  '(show-paren-delay 0.0)
  '(show-paren-mode t)
@@ -266,9 +267,6 @@ directory to make multiple eshell windows easier."
 
 (defalias 'eshell/e 'eshell/get-eshell-at)
 (put 'eshell/e 'eshell-no-numeric-conversions t)
-
-(global-set-key (kbd "C-x x") 'eshell-here)
-(global-set-key (kbd "C-<f4>") 'kill-buffer-dont-ask)
 
 (global-hl-line-mode 0)
 (line-number-mode +1)
