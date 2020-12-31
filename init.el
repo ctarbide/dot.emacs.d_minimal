@@ -39,15 +39,13 @@
 ;;  git config -l | *grep color
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(confirm-kill-emacs 'y-or-n-p)
  '(inhibit-startup-screen t)
  '(show-paren-delay 0.0)
  '(show-paren-mode t)
- '(show-paren-when-point-inside-paren t))
+ '(show-paren-when-point-inside-paren t)
+ '(cursor-type 'hbar)
+ '(blink-cursor-blinks 0))
 
 (when (equal custom-known-themes '(user changed))
   (load-theme 'wombat t t)
@@ -106,7 +104,7 @@
 
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
-(ido-mode 1)
+(ido-mode)
 
 (add-hook 'after-change-major-mode-hook
           (lambda ()
@@ -153,7 +151,7 @@
 
 (defun unique-buffer-name-from-path (path)
   (let ((p (rtrim-and-remove-last-slash path)))
-    (concat (substring (secure-hash 'sha1 p) 0 4) " " (car (last (split-string p "/" t))))))
+    (concat (substring (secure-hash 'sha1 p) 0 4) " " (file-name-nondirectory p))))
 
 (defun pop-to-ansi-term-line-mode (buffer-name &rest args)
   "pop-to-buffer-same-window and ansi-term, use C-c C-k to use char-mode, C-x C-j to bring back line-mode"
@@ -268,15 +266,41 @@ directory to make multiple eshell windows easier."
 (defalias 'eshell/e 'eshell/get-eshell-at)
 (put 'eshell/e 'eshell-no-numeric-conversions t)
 
+(defun create-custom-shell (program shell-args where echoes force-new)
+  "versatile custom shell creation"
+  (let* ((default-directory where)
+         (path (executable-find program))
+         (bname (format "*shell* %s" (unique-buffer-name-from-path where)))
+         (comint-terminfo-terminal "linux")
+         (explicit-shell-file-name path)
+         (shell-file-name          path)
+         (shell-command-switch     "-c"))
+    (set (intern (format "explicit-%s-args" (file-name-nondirectory path))) shell-args)
+    (with-current-buffer (shell (if force-new (generate-new-buffer bname) (get-buffer-create bname)))
+      ;; local variables must be set after setting buffer mode, due to
+      ;; a kill-all-local-variables being issued when entering a major
+      ;; mode
+      (setq-local comint-process-echoes echoes))))
+
+(defun create-zsh-shell (where &optional arg)
+  (interactive "DWhere? \nP")
+  (let* ((default-directory where))
+    (create-custom-shell "zsh" '("-l") where t arg)))
+
+(global-set-key (kbd "C-x x") #'create-zsh-shell)
+
 (global-hl-line-mode 0)
-(line-number-mode +1)
-(global-display-line-numbers-mode +1)
-(column-number-mode t)
-(size-indication-mode 0)
+(line-number-mode)
+(global-display-line-numbers-mode)
+(column-number-mode)
+(size-indication-mode)
+(blink-cursor-mode)
 
 (setq frame-title-format
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
+
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (message "All done with %s!" "init.el")
