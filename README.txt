@@ -27,6 +27,11 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
          (custom-settings (expand-file-name "custom-settings.el" thisdir)))
     (when (file-exists-p custom-settings)
       (load-file custom-settings)))
+
+
+  (when (getenv "INSIDE_EMACS")
+    (error "Running emacs inside emacs? Are you sure about that?")
+    (kill-emacs 1))
 #+END_SRC
 
 
@@ -215,9 +220,16 @@ IDO will save you a lot of time in finding files and buffers, use =C-x
 C-f= and =C-x C-b= to fall back to standard minibuffer. More
 information in [[https://www.masteringemacs.org/article/introduction-to-ido-mode][Mastering Emacs Book]].
 
+See also:
+
+- https://stackoverflow.com/questions/17986194/emacs-disable-automatic-file-search-in-ido-mode
+
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
+  (require 'ido)
   (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
+  (setq ido-auto-merge-work-directories-length -1)
+  (ido-everywhere)
   (ido-mode)
 #+END_SRC
 
@@ -464,7 +476,20 @@ more future proof and sane approach.
     (let* ((default-directory where))
       (create-custom-shell "zsh" '("-l") where t arg)))
 
+  (defun list-shells (&optional arg)
+    (interactive "P")
+    (pop-to-buffer-same-window
+     (if arg
+         (list-buffers arg)
+       (list-buffers-noselect nil
+                              (seq-filter
+                               (lambda (e) (string-prefix-p "*shell* " (buffer-name e) t))
+                               (buffer-list))))))
+
   (global-set-key (kbd "C-x x") #'create-zsh-shell)
+
+  # use 'T' twice (or 'g' once) in buffer list to list all buffers
+  (global-set-key (kbd "C-x C-b") #'list-shells)
 #+end_src
 
 

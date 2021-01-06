@@ -10,6 +10,11 @@
   (when (file-exists-p custom-settings)
     (load-file custom-settings)))
 
+
+(when (getenv "INSIDE_EMACS")
+  (error "Running emacs inside emacs? Are you sure about that?")
+  (kill-emacs 1))
+
 (setq gc-cons-threshold 50000000)
 (setq large-file-warning-threshold 100000000)
 
@@ -102,8 +107,10 @@
     pcomplete-file-ignore nil
     pcomplete-use-paring nil)))
 
+(require 'ido)
 (setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
+(setq ido-auto-merge-work-directories-length -1)
+(ido-everywhere)
 (ido-mode)
 
 (add-hook 'after-change-major-mode-hook
@@ -287,7 +294,20 @@ directory to make multiple eshell windows easier."
   (let* ((default-directory where))
     (create-custom-shell "zsh" '("-l") where t arg)))
 
+(defun list-shells (&optional arg)
+  (interactive "P")
+  (pop-to-buffer-same-window
+   (if arg
+       (list-buffers arg)
+     (list-buffers-noselect nil
+                            (seq-filter
+                             (lambda (e) (string-prefix-p "*shell* " (buffer-name e) t))
+                             (buffer-list))))))
+
 (global-set-key (kbd "C-x x") #'create-zsh-shell)
+
+# use 'T' twice (or 'g' once) in buffer list to list all buffers
+(global-set-key (kbd "C-x C-b") #'list-shells)
 
 (global-hl-line-mode 0)
 (line-number-mode)
