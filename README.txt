@@ -488,7 +488,7 @@ more future proof and sane approach.
 
   (global-set-key (kbd "C-x x") #'create-zsh-shell)
 
-  # use 'T' twice (or 'g' once) in buffer list to list all buffers
+  ;; use 'T' twice (or 'g' once) in buffer list to list all buffers
   (global-set-key (kbd "C-x C-b") #'list-shells)
 #+end_src
 
