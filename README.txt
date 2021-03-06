@@ -457,7 +457,8 @@ more future proof and sane approach.
 #+begin_src emacs-lisp :tangle init.el
   (defun create-custom-shell (program shell-args where echoes force-new)
     "versatile custom shell creation"
-    (let* ((default-directory where)
+    (let* ((where (expand-file-name where))
+           (default-directory where)
            (path (executable-find program))
            (bname (format "*shell* %s" (unique-buffer-name-from-path where)))
            (comint-terminfo-terminal "linux")

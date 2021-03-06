@@ -275,7 +275,8 @@ directory to make multiple eshell windows easier."
 
 (defun create-custom-shell (program shell-args where echoes force-new)
   "versatile custom shell creation"
-  (let* ((default-directory where)
+  (let* ((where (expand-file-name where))
+         (default-directory where)
          (path (executable-find program))
          (bname (format "*shell* %s" (unique-buffer-name-from-path where)))
          (comint-terminfo-terminal "linux")
