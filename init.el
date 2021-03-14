@@ -287,13 +287,14 @@ directory to make multiple eshell windows easier."
     (with-current-buffer (shell (if force-new (generate-new-buffer bname) (get-buffer-create bname)))
       ;; local variables must be set after setting buffer mode, due to
       ;; a kill-all-local-variables being issued when entering a major
-      ;; mode
+      ;; mode, look at comint.el for the list of buffer local
+      ;; variables
       (setq-local comint-process-echoes echoes))))
 
-(defun create-zsh-shell (where &optional arg)
+(defun create-zsh-shell (where &optional force-new)
   (interactive "DWhere? \nP")
   (let* ((default-directory where))
-    (create-custom-shell "zsh" '("-l") where t arg)))
+    (create-custom-shell "zsh" '("-l") where t force-new)))
 
 (defun list-shells (&optional arg)
   (interactive "P")
