@@ -152,10 +152,67 @@ See also:
 - (describe-function 'disable-theme)
 
 
+* Highlight Selected Window
+
+- https://emacs.stackexchange.com/questions/24630/is-there-a-way-to-change-color-of-active-windows-fringe
+
+- https://www.gnu.org/software/emacs/manual/html_node/elisp/Advising-Functions.html
+
+- https://www.gnu.org/software/emacs/manual/html_node/elisp/Advising-Named-Functions.html
+
+- https://www.gnu.org/software/emacs/manual/html_node/elisp/Advice-Combinators.html
+
+#+begin_src emacs-lisp :tangle init.el
+  ;; (view-echo-area-messages)
+  ;; (describe-function 'stringp)
+  ;; (describe-variable 'indent-tabs-mode)
+
+  (require 'nadvice)
+  (require 'help-fns)
+
+  (defun highlight-selected-window ()
+    "Highlight selected window with a different background color."
+    (walk-windows (lambda (w)
+                    (unless (eq w (selected-window))
+                      (with-current-buffer (window-buffer w)
+                        (buffer-face-set '(:background "#111" :foreground "#444"))))))
+    (buffer-face-set 'default))
+
+  (defun highlight-selected-window-delete-other-windows (&optional WINDOW)
+    (highlight-selected-window))
+
+  (defun highlight-selected-window-describe-function (FUNCTION)
+    (highlight-selected-window))
+
+  (defun highlight-selected-window-describe-variable (VARIABLE &optional BUFFER FRAME)
+    (highlight-selected-window))
+
+  (defun highlight-selected-window-describe-key (KEY-LIST &optional BUFFER)
+    (highlight-selected-window))
+
+  ;;
+
+  (add-hook 'buffer-list-update-hook 'highlight-selected-window)
+
+  (add-function :after (symbol-function 'view-echo-area-messages) #'highlight-selected-window)
+
+  (add-function :after (symbol-function 'delete-other-windows) #'highlight-selected-window-delete-other-windows)
+  (add-function :after (symbol-function 'describe-function) #'highlight-selected-window-describe-function)
+  (add-function :after (symbol-function 'describe-variable) #'highlight-selected-window-describe-variable)
+  (add-function :after (symbol-function 'describe-key) #'highlight-selected-window-describe-key)
+
+  ;; (remove-function (symbol-function 'describe-function) #'highlight-selected-window-describe-function)
+  ;; (setq 'buffer-list-update-hook nil)
+#+end_src
+
+
 * Eshell setup
 
-Forget about silly shells, use an elisp enabled ultra powerful shell
++Forget about silly shells, use an elisp enabled ultra powerful shell+
 (if you can tolerate the awful parts).
+
+Just use =shell= backed by a real, dependable shell, like =zsh=,
+compliance adds up pretty well over time.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (require 'eshell)
@@ -239,19 +296,20 @@ See also:
 Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(add-hook 'after-change-major-mode-hook
-          (lambda ()
-            (when (and
-                   (not (eq major-mode 'Custom-mode))
-                   (not (eq major-mode 'shell-mode))
-                   (not (eq major-mode 'emacs-pager-mode))
-                   (not (eq major-mode 'term-mode))
-                   (not (eq major-mode 'eshell-mode))
-                   (not (eq major-mode 'ibuffer-mode))
-                   (not (eq major-mode 'rspec-compilation-mode))
-                   (not (eq major-mode 'Buffer-menu-mode))
-                   (not (eq major-mode 'prodigy-mode)))
-              (setq show-trailing-whitespace t))))
+  (add-hook 'after-change-major-mode-hook
+            (lambda ()
+              (when (and
+                     (not (eq major-mode 'Custom-mode))
+                     (not (eq major-mode 'shell-mode))
+                     (not (eq major-mode 'emacs-pager-mode))
+                     (not (eq major-mode 'term-mode))
+                     (not (eq major-mode 'eshell-mode))
+                     (not (eq major-mode 'ibuffer-mode))
+                     (not (eq major-mode 'rspec-compilation-mode))
+                     (not (eq major-mode 'Buffer-menu-mode))
+                     (not (eq major-mode 'prodigy-mode))
+                     (not (eq major-mode 'Info-mode)))
+                (setq show-trailing-whitespace t))))
 #+END_SRC
 
 
@@ -455,6 +513,10 @@ Olin Shivers and Simon Marshall) and a real shell (=zsh= below) is a
 more future proof and sane approach.
 
 #+begin_src emacs-lisp :tangle init.el
+  ;; "-ic" flag enable zsh aliases in shell commands, https://github.com/syl20bnr/spacemacs/issues/13401
+  (when (string= "zsh" (file-name-nondirectory shell-file-name))
+    (setq shell-command-switch "-ic"))
+
   (defun create-custom-shell (program shell-args where echoes force-new)
     "versatile custom shell creation"
     (let* ((where (expand-file-name where))
@@ -463,8 +525,7 @@ more future proof and sane approach.
            (bname (format "*shell* %s" (unique-buffer-name-from-path where)))
            (comint-terminfo-terminal "linux")
            (explicit-shell-file-name path)
-           (shell-file-name          path)
-           (shell-command-switch     "-c"))
+           (shell-file-name path))
       (set (intern (format "explicit-%s-args" (file-name-nondirectory path))) shell-args)
       (with-current-buffer (shell (if force-new (generate-new-buffer bname) (get-buffer-create bname)))
         ;; local variables must be set after setting buffer mode, due to
@@ -482,7 +543,7 @@ more future proof and sane approach.
     (interactive "P")
     (pop-to-buffer-same-window
      (if arg
-         (list-buffers arg)
+         (list-buffers-noselect arg)
        (list-buffers-noselect nil
                               (seq-filter
                                (lambda (e) (string-prefix-p "*shell* " (buffer-name e) t))
