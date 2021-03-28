@@ -117,13 +117,18 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(blink-cursor-blinks 0)
+   '(buffers-menu-buffer-name-length 50)
    '(confirm-kill-emacs 'y-or-n-p)
+   '(cursor-type 'hbar)
    '(inhibit-startup-screen t)
    '(show-paren-delay 0.0)
    '(show-paren-mode t)
-   '(show-paren-when-point-inside-paren t)
-   '(cursor-type 'hbar)
-   '(blink-cursor-blinks 0))
+   '(show-paren-when-point-inside-paren t))
 #+END_SRC
 
 
@@ -169,6 +174,7 @@ See also:
 
   (require 'nadvice)
   (require 'help-fns)
+  (require 'apropos)
 
   (defun highlight-selected-window ()
     "Highlight selected window with a different background color."
@@ -190,6 +196,13 @@ See also:
   (defun highlight-selected-window-describe-key (KEY-LIST &optional BUFFER)
     (highlight-selected-window))
 
+  (defun highlight-selected-window-list-buffers (&optional ARG)
+    (highlight-selected-window))
+
+  ;; TODO: window highlight after apropos is not working, investigate
+  (defun highlight-selected-window-apropos (PATTERN &optional DO-ALL)
+    (highlight-selected-window))
+
   ;;
 
   (add-hook 'buffer-list-update-hook 'highlight-selected-window)
@@ -200,6 +213,8 @@ See also:
   (add-function :after (symbol-function 'describe-function) #'highlight-selected-window-describe-function)
   (add-function :after (symbol-function 'describe-variable) #'highlight-selected-window-describe-variable)
   (add-function :after (symbol-function 'describe-key) #'highlight-selected-window-describe-key)
+  (add-function :after (symbol-function 'list-buffers) #'highlight-selected-window-list-buffers)
+  (add-function :after (symbol-function 'apropos) #'highlight-selected-window-apropos)
 
   ;; (remove-function (symbol-function 'describe-function) #'highlight-selected-window-describe-function)
   ;; (setq 'buffer-list-update-hook nil)
@@ -539,15 +554,21 @@ more future proof and sane approach.
     (let* ((default-directory where))
       (create-custom-shell "zsh" '("-l") where t force-new)))
 
+  (defun buffer-list-shell-mode ()
+    (seq-filter (lambda (b) (eq 'shell-mode (buffer-local-value 'major-mode b))) (buffer-list)))
+
+  (defun sort-predicate-has-process (a b)
+    (and (get-buffer-process a) (not (get-buffer-process b))))
+
+  (defun buffer-list-shell-mode-running-first ()
+    (sort (buffer-list-shell-mode) #'sort-predicate-has-process))
+
   (defun list-shells (&optional arg)
     (interactive "P")
     (pop-to-buffer-same-window
      (if arg
          (list-buffers-noselect arg)
-       (list-buffers-noselect nil
-                              (seq-filter
-                               (lambda (e) (string-prefix-p "*shell* " (buffer-name e) t))
-                               (buffer-list))))))
+       (list-buffers-noselect nil (buffer-list-shell-mode-running-first)))))
 
   (global-set-key (kbd "C-x x") #'create-zsh-shell)
 
@@ -597,7 +618,14 @@ more future proof and sane approach.
 Just a simple debuging message.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(message "All done with %s!" "init.el")
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+
+  (message "All done with %s!" "init.el")
 #+END_SRC
 
 
