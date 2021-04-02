@@ -63,14 +63,6 @@
   (when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
     (add-hook 'window-setup-hook '(lambda () (enable-theme (car custom-known-themes))))))
 
-;; (view-echo-area-messages)
-;; (describe-function 'stringp)
-;; (describe-variable 'indent-tabs-mode)
-
-(require 'nadvice)
-(require 'help-fns)
-(require 'apropos)
-
 (defun highlight-selected-window ()
   "Highlight selected window with a different background color."
   (walk-windows (lambda (w)
@@ -79,40 +71,7 @@
                       (buffer-face-set '(:background "#111" :foreground "#444"))))))
   (buffer-face-set 'default))
 
-(defun highlight-selected-window-delete-other-windows (&optional WINDOW)
-  (highlight-selected-window))
-
-(defun highlight-selected-window-describe-function (FUNCTION)
-  (highlight-selected-window))
-
-(defun highlight-selected-window-describe-variable (VARIABLE &optional BUFFER FRAME)
-  (highlight-selected-window))
-
-(defun highlight-selected-window-describe-key (KEY-LIST &optional BUFFER)
-  (highlight-selected-window))
-
-(defun highlight-selected-window-list-buffers (&optional ARG)
-  (highlight-selected-window))
-
-;; TODO: window highlight after apropos is not working, investigate
-(defun highlight-selected-window-apropos (PATTERN &optional DO-ALL)
-  (highlight-selected-window))
-
-;;
-
-(add-hook 'buffer-list-update-hook 'highlight-selected-window)
-
-(add-function :after (symbol-function 'view-echo-area-messages) #'highlight-selected-window)
-
-(add-function :after (symbol-function 'delete-other-windows) #'highlight-selected-window-delete-other-windows)
-(add-function :after (symbol-function 'describe-function) #'highlight-selected-window-describe-function)
-(add-function :after (symbol-function 'describe-variable) #'highlight-selected-window-describe-variable)
-(add-function :after (symbol-function 'describe-key) #'highlight-selected-window-describe-key)
-(add-function :after (symbol-function 'list-buffers) #'highlight-selected-window-list-buffers)
-(add-function :after (symbol-function 'apropos) #'highlight-selected-window-apropos)
-
-;; (remove-function (symbol-function 'describe-function) #'highlight-selected-window-describe-function)
-;; (setq 'buffer-list-update-hook nil)
+(add-hook 'window-state-change-hook 'highlight-selected-window)  ;; ideal hook
 
 (require 'eshell)
 (require 'em-basic)
@@ -198,8 +157,7 @@
 (require 'ob-perl nil t)
 
 (defun dos2unix ()
-  "Say that hard goodby to CRLF"
-  (interactive)
+  "CR-LF to LF"
   (set-buffer-file-coding-system 'utf-8-unix 't))
 
 (defun associated-buffer-directory-name ()
@@ -235,6 +193,10 @@
               (car args) nil (cdr args))
      (term-char-mode)
      (current-buffer))))
+
+(defun kill-ring-clear ()
+  (setq kill-ring nil)
+  (garbage-collect))
 
 (defun eshell/lspath-exec-path ()
   "list path from exec-path"
