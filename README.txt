@@ -161,7 +161,9 @@ See also:
 
 - https://emacs.stackexchange.com/questions/24630/is-there-a-way-to-change-color-of-active-windows-fringe
 
-#+begin_src emacs-lisp :tangle init.el
+- TODO: highlight-selected-window is not maintaining text-scale adjustment (C-x C-=)
+
+#+begin_src emacs-lisp :tangle no
   (defun highlight-selected-window ()
     "Highlight selected window with a different background color."
     (walk-windows (lambda (w)
@@ -518,6 +520,11 @@ more future proof and sane approach.
     (interactive "DWhere? \nP")
     (let* ((default-directory where))
       (create-custom-shell "zsh" '("-l") where t force-new)))
+
+  (defun create-bash-shell (where &optional force-new)
+    (interactive "DWhere? \nP")
+    (let* ((default-directory where))
+      (create-custom-shell "bash" '("-l") where nil force-new)))
 
   (defun buffer-list-shell-mode ()
     (seq-filter (lambda (b) (eq 'shell-mode (buffer-local-value 'major-mode b))) (buffer-list)))

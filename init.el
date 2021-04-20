@@ -63,16 +63,6 @@
   (when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
     (add-hook 'window-setup-hook '(lambda () (enable-theme (car custom-known-themes))))))
 
-(defun highlight-selected-window ()
-  "Highlight selected window with a different background color."
-  (walk-windows (lambda (w)
-                  (unless (eq w (selected-window))
-                    (with-current-buffer (window-buffer w)
-                      (buffer-face-set '(:background "#111" :foreground "#444"))))))
-  (buffer-face-set 'default))
-
-(add-hook 'window-state-change-hook 'highlight-selected-window)  ;; ideal hook
-
 (require 'eshell)
 (require 'em-basic)
 (require 'em-unix)
@@ -317,6 +307,11 @@ directory to make multiple eshell windows easier."
   (interactive "DWhere? \nP")
   (let* ((default-directory where))
     (create-custom-shell "zsh" '("-l") where t force-new)))
+
+(defun create-bash-shell (where &optional force-new)
+  (interactive "DWhere? \nP")
+  (let* ((default-directory where))
+    (create-custom-shell "bash" '("-l") where nil force-new)))
 
 (defun buffer-list-shell-mode ()
   (seq-filter (lambda (b) (eq 'shell-mode (buffer-local-value 'major-mode b))) (buffer-list)))
