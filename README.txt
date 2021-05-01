@@ -11,7 +11,7 @@ This is targeted to minimal installations, it assumes a recent emacs
 (tested on v26.3) and it require no package installation nor external
 dependencies.
 
-Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
+Use =M-x org-babel-tangle= to generate =init.el=.
 
 * Preamble
 
@@ -28,10 +28,13 @@ Use =M-x org-babel-tangle= to generate =init.el= and =eshell/alias=.
     (when (file-exists-p custom-settings)
       (load-file custom-settings)))
 
-
   (when (getenv "INSIDE_EMACS")
     (error "Running emacs inside emacs? Are you sure about that?")
     (kill-emacs 1))
+
+  (defun clear-kill-ring-and-gc ()
+    (interactive)
+    (setq kill-ring nil) (garbage-collect))
 #+END_SRC
 
 
@@ -124,7 +127,6 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
    '(blink-cursor-blinks 0)
    '(buffers-menu-buffer-name-length 50)
    '(confirm-kill-emacs 'y-or-n-p)
-   '(cursor-type 'hbar)
    '(inhibit-startup-screen t)
    '(show-paren-delay 0.0)
    '(show-paren-mode t)
@@ -137,7 +139,7 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
 It is such a nice theme.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (when (equal custom-known-themes '(user changed))
+  (when (and (display-graphic-p) (equal custom-known-themes '(user changed)))
     (load-theme 'wombat t t)
     (add-hook 'after-init-hook '(lambda () (enable-theme (car custom-known-themes))))
     (when (and (memq system-type '(ms-dos windows-nt)) (> emacs-major-version 24))
@@ -185,71 +187,6 @@ See also:
 #+end_src
 
 
-* Eshell setup
-
-+Forget about silly shells, use an elisp enabled ultra powerful shell+
-(if you can tolerate the awful parts).
-
-Just use =shell= backed by a real, dependable shell, like =zsh=,
-compliance adds up pretty well over time.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-  (require 'eshell)
-  (require 'em-basic)
-  (require 'em-unix)
-  (require 'esh-var)
-
-  (setq eshell-buffer-maximum-lines 10000)
-  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-
-  (setq eshell-history-size 1000) ;; default is 128
-
-  ;; blacklist eshell non-standard sub-par re-implementations on
-  ;; non-windows systems
-  (when (not (eshell-under-windows-p))
-    (fmakunbound 'eshell/basename)
-    (fmakunbound 'eshell/cat)
-    (fmakunbound 'eshell/cp)
-    (fmakunbound 'eshell/date)
-    (fmakunbound 'eshell/diff)
-    (fmakunbound 'eshell/dirname)
-    (fmakunbound 'eshell/du)
-    (fmakunbound 'eshell/echo)
-    (fmakunbound 'eshell/egrep)
-    (fmakunbound 'eshell/env)
-    (fmakunbound 'eshell/fgrep)
-    (fmakunbound 'eshell/grep)
-    (fmakunbound 'eshell/ln)
-    (fmakunbound 'eshell/locate)
-    (fmakunbound 'eshell/ls)
-    (fmakunbound 'eshell/make)
-    (fmakunbound 'eshell/man)
-    (fmakunbound 'eshell/mkdir)
-    (fmakunbound 'eshell/mv)
-    (fmakunbound 'eshell/rm)
-    (fmakunbound 'eshell/rmdir)
-    (fmakunbound 'eshell/sudo)
-    (fmakunbound 'eshell/time)
-    (fmakunbound 'eshell/umask)
-    (fmakunbound 'eshell/whoami))
-
-  (add-hook
-   'eshell-mode-hook
-   (lambda ()
-     (setq
-      pcomplete-cycle-completions nil
-      pcomplete-cycle-cutoff-length 0
-      pcomplete-dir-ignore nil
-      pcomplete-file-ignore nil
-      pcomplete-use-paring nil)))
-#+END_SRC
-
-
-** References
-
-- [[https://emacs.stackexchange.com/questions/5608/how-to-let-eshell-remember-sudo-password-for-two-minutes][how-to-let-eshell-remember-sudo-password-for-two-minutes]]
-
-
 * IDO
 
 IDO will save you a lot of time in finding files and buffers, use =C-x
@@ -282,7 +219,6 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
                      (not (eq major-mode 'shell-mode))
                      (not (eq major-mode 'emacs-pager-mode))
                      (not (eq major-mode 'term-mode))
-                     (not (eq major-mode 'eshell-mode))
                      (not (eq major-mode 'ibuffer-mode))
                      (not (eq major-mode 'rspec-compilation-mode))
                      (not (eq major-mode 'Buffer-menu-mode))
@@ -338,11 +274,13 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
           (and lbd (abbreviate-file-name lbd)))))
 
   (defun rtrim-and-remove-last-slash (path)
-    "as it's name implies"
     (replace-regexp-in-string "[\\/[:space:]]+$" "" path nil nil nil))
 
+  (defun friendly-path (path)
+    (rtrim-and-remove-last-slash (abbreviate-file-name (expand-file-name path))))
+
   (defun unique-buffer-name-from-path (path)
-    (let ((p (rtrim-and-remove-last-slash path)))
+    (let ((p (friendly-path path)))
       (concat (substring (secure-hash 'sha1 p) 0 4) " " (file-name-nondirectory p))))
 
   (defun pop-to-ansi-term-line-mode (buffer-name &rest args)
@@ -369,123 +307,30 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
     (garbage-collect))
 #+END_SRC
 
-Listing of pop-to-ansi-term-* usage examples under eshell.
+Listing of pop-to-ansi-term-* usage examples.
 
 Useful shortcuts:
 
 - C-x C-j :: switch ansi-term to line-mode
+  
 - C-c C-k :: switch ansi-term to char-mode
 
-#+BEGIN_SRC sh
-  pop-to-ansi-term-char-mode $(generate-new-buffer-name "*top*") top
-  pop-to-ansi-term-char-mode () top
-  pop-to-ansi-term-char-mode () /usr/bin/top
+#+BEGIN_SRC emacs-lisp
+  (require 'term)
 
-  pop-to-ansi-term-char-mode () watch -n5 -d ls -lh backup-2020-04-22_21h12m22.qcow2.xz
+  (pop-to-ansi-term-char-mode (generate-new-buffer-name "*top*") "top")
 
-  pop-to-ansi-term-line-mode $(generate-new-buffer-name "*sh*") /bin/sh -c 'echo running $0; for i in "$@"; do echo "[$i]"; done' inline-script a 'b c' " d "
-#+END_SRC
+  (with-current-buffer (pop-to-ansi-term-char-mode nil "top")
+    (display-line-numbers-mode 0))
 
+  (pop-to-ansi-term-char-mode nil "/usr/bin/top")
 
-* Eshell Utilities
+  ;; C-c C-c to send SIGINT
+  (pop-to-ansi-term-char-mode nil "watch" "-n5" "-d" "ls" "-lh")
 
-Special thanks to [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][Howard Abrams]] for =eshell-here=. Here is a slightly
-"improved" version and minor variations.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-  (defun eshell/lspath-exec-path ()
-    "list path from exec-path"
-    (mapconcat 'identity exec-path "\n"))
-
-  (defun eshell/lspath-path ()
-    "list path from PATH environment variable"
-    (mapconcat 'identity (split-string (getenv "PATH") path-separator) "\n"))
-
-  (defun eshell/lspath-eshell-path-env ()
-    "list path from eshell-path-env variable"
-    (mapconcat 'identity (split-string eshell-path-env path-separator) "\n"))
-
-  (defun eshell-here-maybe-reuse-existing ()
-    "Opens up a new shell in the directory associated with the
-  current buffer's file. The eshell is renamed to match that
-  directory to make multiple eshell windows easier."
-    (let* ((parent (or
-                    (associated-buffer-directory-name)
-                    (and (bound-and-true-p default-directory)
-                         (abbreviate-file-name default-directory))
-                    (error "could not determine parent directory")))
-           (height (/ (window-total-height) 3))
-           (name (unique-buffer-name-from-path parent))
-           (eshell-buffer-name (concat "*eshell: " name "*"))
-           (buffer (get-buffer-create eshell-buffer-name))
-           (window (or (get-buffer-window buffer 'visible)
-                       (split-window-vertically (- height)))))
-      (select-window window)
-      (switch-to-buffer buffer nil t)
-      (unless (derived-mode-p 'eshell-mode)
-        (eshell-mode))))
-
-  (defun eshell-here-force-new ()
-    "Opens up a new shell in the directory associated with the
-  current buffer's file. The eshell is renamed to match that
-  directory to make multiple eshell windows easier."
-    (let* ((parent (or
-                    (associated-buffer-directory-name)
-                    (and (bound-and-true-p default-directory)
-                         (abbreviate-file-name default-directory))
-                    (error "could not determine parent directory")))
-           (height (/ (window-total-height) 3))
-           (name (unique-buffer-name-from-path parent))
-           (eshell-buffer-name (concat "*eshell: " name "*"))
-           (buffer (generate-new-buffer eshell-buffer-name)))
-      (select-window (split-window-vertically (- height)))
-      (switch-to-buffer buffer nil t)
-      (unless (derived-mode-p 'eshell-mode)
-        (eshell-mode))))
-
-  (defun eshell-here (&optional arg)
-    "Opens up a new shell in the directory associated with the
-  current buffer's file. The eshell is renamed to match that
-  directory to make multiple eshell windows easier."
-    (interactive "P")
-    (if arg (eshell-here-force-new) (eshell-here-maybe-reuse-existing)))
-
-  (defun kill-buffer-dont-ask ()
-    "as it name implies"
-    (interactive)
-    (kill-buffer))
-
-  (defun eshell/new-eshell-at (arg)
-    "create a new eshell with the directory name in the buffer name"
-    (if (listp arg) (setq arg (car arg)))
-    (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
-    (let* ((dir (abbreviate-file-name (expand-file-name arg)))
-           (default-directory (file-name-as-directory (expand-file-name dir)))
-           (name (unique-buffer-name-from-path dir))
-           (buf (generate-new-buffer (format "*eshell: %s*" name))))
-                                          ; (cl-assert (and buf (buffer-live-p buf)))
-      (pop-to-buffer-same-window buf)
-      (unless (derived-mode-p 'eshell-mode)
-        (eshell-mode))
-      buf))
-
-  (defun eshell/get-eshell-at (arg)
-    "get or create a new eshell with the directory name in the buffer name"
-    (if (listp arg) (setq arg (car arg)))
-    (if (not (file-directory-p arg)) (error "\"%s\" is not a directory" arg))
-    (let* ((dir (abbreviate-file-name (expand-file-name arg)))
-           (default-directory (file-name-as-directory (expand-file-name dir)))
-           (name (unique-buffer-name-from-path dir))
-           (buf (get-buffer-create (format "*eshell: %s*" name))))
-                                          ; (cl-assert (and buf (buffer-live-p buf)))
-      (pop-to-buffer-same-window buf)
-      (unless (derived-mode-p 'eshell-mode)
-        (eshell-mode))
-      buf))
-  (put 'eshell/get-eshell-at 'eshell-no-numeric-conversions t)
-
-  (defalias 'eshell/e 'eshell/get-eshell-at)
-  (put 'eshell/e 'eshell-no-numeric-conversions t)
+  (pop-to-ansi-term-line-mode
+   (generate-new-buffer-name "*sh*")
+   "/bin/sh" "-c" "echo running $0; for i in \"$@\"; do echo \"[$i]\"; done" "inline-script" "a" "b c" " d ")
 #+END_SRC
 
 Eshell is nice and got me some workflow improvements, but grueling
@@ -598,36 +443,6 @@ Just a simple debuging message.
    )
 
   (message "All done with %s!" "init.el")
-#+END_SRC
-
-
-* Some eshell aliases
-
-#+BEGIN_SRC text :padline no :tangle eshell/alias
-  alias bash-here (apply 'pop-to-ansi-term-char-mode nil "bash" (eshell-flatten-list eshell-command-arguments))
-  alias bl (pop-to-buffer-same-window (list-buffers-noselect))
-  alias bl-other-window (pop-to-buffer (list-buffers-noselect) t)
-  alias clear-kill-ring-and-gc (progn (setq kill-ring nil) (garbage-collect))
-  alias echo1-cmd echo $1
-  alias echo1-elisp (princ (car eshell-command-arguments))
-  alias el (pop-to-buffer-same-window (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))))
-  alias el-other-window (pop-to-buffer (list-buffers-noselect nil (seq-filter (lambda (e) (string-prefix-p "*eshell" (buffer-name e) t)) (buffer-list))) t)
-  alias emacs for i in ${eshell-flatten-list $*} {find-file $i}
-  alias emacs-minimal-dark *emacs -Q --eval '(load-theme (quote tango-dark))' $*
-  alias fl (pop-to-buffer-same-window (list-buffers-noselect t))
-  alias fl-other-window (pop-to-buffer (list-buffers-noselect t) t)
-  alias gi git status; git branch -a; git remote -v
-  alias git git -c color.ui=always $*
-  alias git-diff-nocr git diff $* | perl -lpe's,\r,,'
-  alias git-repack-and-prune git repack -d && git prune
-  alias ll ls -alhF --color=auto $*
-  alias localstamp (format-time-string "%Y-%m-%d_%Hh%Mm%S")
-  alias lspath-perl-colon echo $PATH | perl -l -072 -pe1
-  alias lspath-perl-semicolon echo $PATH | perl -l -073 -pe1
-  alias rm-tilde rm -fv *~ .??*~
-  alias runemacs-exe "$emacs_dir/bin/runemacs.exe" $*
-  alias strip-whitespace-eol perl -lpi -e's,\s+$,,' $*
-  alias unescape perl -MURI::Escape -lne'print uri_unescape($_)'
 #+END_SRC
 
 
