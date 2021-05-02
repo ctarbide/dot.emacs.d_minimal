@@ -184,10 +184,14 @@
 
 (defun list-shells (&optional arg)
   (interactive "P")
-  (pop-to-buffer-same-window
-   (if arg
-       (list-buffers-noselect arg)
-     (list-buffers-noselect nil (buffer-list-shell-mode-running-first)))))
+  (let* ((shell-buffers (buffer-list-shell-mode-running-first))
+         (buffer-list (if arg (list-buffers-noselect arg)
+                        (list-buffers-noselect nil shell-buffers))))
+    (with-current-buffer buffer-list
+      (aset tabulated-list-format 3 '("Buffer (shells only, running first)" 35 t))
+      (tabulated-list-init-header)
+      (tabulated-list-print t))
+    (pop-to-buffer-same-window buffer-list)))
 
 (global-set-key (kbd "C-x x") #'create-zsh-shell)
 
