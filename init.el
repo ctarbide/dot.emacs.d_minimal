@@ -161,6 +161,8 @@
       ;; a kill-all-local-variables being issued when entering a major
       ;; mode, look at comint.el for the list of buffer local
       ;; variables
+      (setq-local comint-buffer-maximum-size 100000)
+      (add-hook 'comint-output-filter-functions 'comint-truncate-buffer t t)
       (setq-local comint-process-echoes echoes))))
 
 (defun create-zsh-shell (where &optional force-new)
