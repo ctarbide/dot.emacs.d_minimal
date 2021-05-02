@@ -125,7 +125,6 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
    '(blink-cursor-blinks 0)
-   '(buffers-menu-buffer-name-length 50)
    '(confirm-kill-emacs 'y-or-n-p)
    '(inhibit-startup-screen t)
    '(show-paren-delay 0.0)
@@ -344,6 +343,7 @@ more future proof and sane approach.
   (when (string= "zsh" (file-name-nondirectory shell-file-name))
     (setq shell-command-switch "-ic"))
 
+  (require 'shell) ;; define shell and comint variables
   (defun create-custom-shell (program shell-args where echoes force-new)
     "versatile custom shell creation"
     (let* ((where (expand-file-name where))
