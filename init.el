@@ -44,7 +44,7 @@
 ;;  git config --global color.diff always
 ;;  git config --global color.status always
 ;;  git config --global color.branch always
-;;  git config -l | *grep color
+;;  git config -l | grep color
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -219,4 +219,4 @@
  ;; If there is more than one, they won't work right.
  )
 
-(message "All done with %s!" "init.el")
+(message "All done with %s!" (file-name-nondirectory (or load-file-name buffer-file-name)))

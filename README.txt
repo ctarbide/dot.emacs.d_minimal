@@ -112,7 +112,7 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
   ;;  git config --global color.diff always
   ;;  git config --global color.status always
   ;;  git config --global color.branch always
-  ;;  git config -l | *grep color
+  ;;  git config -l | grep color
 #+END_SRC
 
 
@@ -189,9 +189,9 @@ See also:
 
 * IDO
 
-IDO will save you a lot of time in finding files and buffers, use =C-x
-C-f= and =C-x C-b= to fall back to standard minibuffer. More
-information in [[https://www.masteringemacs.org/article/introduction-to-ido-mode][Mastering Emacs Book]].
+IDO will save you a lot of time in finding files and buffers, use
+=C-f= (after =C-x C-f=) and =C-b= (after =C-x b=) to fall back to
+standard minibuffer. More information in [[https://www.masteringemacs.org/article/introduction-to-ido-mode][Mastering Emacs Book]].
 
 See also:
 
@@ -446,7 +446,7 @@ Just a simple debuging message.
    ;; If there is more than one, they won't work right.
    )
 
-  (message "All done with %s!" "init.el")
+  (message "All done with %s!" (file-name-nondirectory (or load-file-name buffer-file-name)))
 #+END_SRC
 
 
