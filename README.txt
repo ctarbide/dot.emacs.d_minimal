@@ -374,21 +374,31 @@ more future proof and sane approach.
   (defun buffer-list-shell-mode ()
     (seq-filter (lambda (b) (eq 'shell-mode (buffer-local-value 'major-mode b))) (buffer-list)))
 
+  (defun buffer-list-files ()
+    (seq-filter #'buffer-file-name (buffer-list)))
+
   (defun sort-predicate-has-process (a b)
     (and (get-buffer-process a) (not (get-buffer-process b))))
+
+  (defun sort-predicate-is-writable (a b)
+    (not (buffer-local-value 'buffer-read-only a)))
 
   (defun buffer-list-shell-mode-running-first ()
     (sort (buffer-list-shell-mode) #'sort-predicate-has-process))
 
+  (defun buffer-list-files-writable-first ()
+    (sort (buffer-list-files) #'sort-predicate-is-writable))
+
   (defun list-shells (&optional arg)
     (interactive "P")
-    (let* ((shell-buffers (buffer-list-shell-mode-running-first))
-           (buffer-list (if arg (list-buffers-noselect arg)
-                          (list-buffers-noselect nil shell-buffers))))
-      (with-current-buffer buffer-list
-        (aset tabulated-list-format 3 '("Buffer (shells only, running first)" 35 t))
-        (tabulated-list-init-header)
-        (tabulated-list-print t))
+    (let* ((buffers (if arg (buffer-list-files-writable-first) (buffer-list-shell-mode-running-first)))
+           (buffer-list (list-buffers-noselect nil buffers))
+           (column-title (if arg "Buffer (files only, writable first)" "Buffer (shells only, running first)")))
+      (when buffers
+        (with-current-buffer buffer-list
+          (aset tabulated-list-format 3 `(,column-title 35 t))
+          (tabulated-list-init-header)
+          (tabulated-list-print t)))
       (pop-to-buffer-same-window buffer-list)))
 
   (global-set-key (kbd "C-x x") #'create-zsh-shell)
