@@ -165,10 +165,11 @@
       (add-hook 'comint-output-filter-functions 'comint-truncate-buffer t t)
       (setq-local comint-process-echoes echoes))))
 
+;; zsh -V is for NO_PROMPT_CR (unsetopt prompt_cr)
 (defun create-zsh-shell (where &optional force-new)
   (interactive "DWhere? \nP")
   (let* ((default-directory where))
-    (create-custom-shell "zsh" '("-l") where t force-new)))
+    (create-custom-shell "zsh" '("-lV") where t force-new)))
 
 (defun create-bash-shell (where &optional force-new)
   (interactive "DWhere? \nP")
