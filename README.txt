@@ -421,7 +421,8 @@ more future proof and sane approach.
 #+begin_src emacs-lisp :tangle init.el
   (global-hl-line-mode 0)
   (line-number-mode)
-  (global-display-line-numbers-mode)
+  (global-display-line-numbers-mode 0)
+  (global-linum-mode)
   (column-number-mode)
   (size-indication-mode)
   (blink-cursor-mode)
