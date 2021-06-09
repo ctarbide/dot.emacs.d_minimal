@@ -18,19 +18,21 @@
   (interactive)
   (setq kill-ring nil) (garbage-collect))
 
-(setq gc-cons-threshold 50000000)
+(setq gc-cons-threshold 10000000)
 (setq large-file-warning-threshold 100000000)
 
 (when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
   (setq default-directory (expand-file-name "~")))
 
-(if (fboundp 'menu-bar-mode) (menu-bar-mode 0))
+;; enable (menu is didactic)
+(if (fboundp 'menu-bar-mode) (menu-bar-mode))
+
+;; disable
 (if (fboundp 'tool-bar-mode) (tool-bar-mode 0))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
 
 (prefer-coding-system 'utf-8-unix)
 
-(setq indent-tabs-mode nil)
 (setq-default indent-tabs-mode nil)
 
 (set-fill-column 90)
@@ -146,6 +148,8 @@
   (setq shell-command-switch "-ic"))
 
 (require 'shell) ;; define shell and comint variables
+
+;; TODO: error if 'where does not exist
 (defun create-custom-shell (program shell-args where echoes force-new)
   "versatile custom shell creation"
   (let* ((where (expand-file-name where))
@@ -171,10 +175,14 @@
   (let* ((default-directory where))
     (create-custom-shell "zsh" '("-lV") where t force-new)))
 
+(defalias 'zsh #'create-zsh-shell)
+
 (defun create-bash-shell (where &optional force-new)
   (interactive "DWhere? \nP")
   (let* ((default-directory where))
     (create-custom-shell "bash" '("-l") where nil force-new)))
+
+(defalias 'bash #'create-bash-shell)
 
 (defun buffer-list-shell-mode ()
   (seq-filter (lambda (b) (eq 'shell-mode (buffer-local-value 'major-mode b))) (buffer-list)))
@@ -182,21 +190,37 @@
 (defun buffer-list-files ()
   (seq-filter #'buffer-file-name (buffer-list)))
 
+(defun z--buffer-is-writable-p (buf)
+  (not (buffer-local-value 'buffer-read-only buf)))
+
 (defun sort-predicate-has-process (a b)
   (and (get-buffer-process a) (not (get-buffer-process b))))
 
-(defun sort-predicate-is-writable (a b)
-  (not (buffer-local-value 'buffer-read-only a)))
+(defun sort-predicate-writable (a b)
+  (and (z--buffer-is-writable-p a) (not (z--buffer-is-writable-p b))))
 
-(defun buffer-list-shell-mode-running-first ()
-  (sort (buffer-list-shell-mode) #'sort-predicate-has-process))
+(defun sort-predicate-modified (a b)
+  (and (buffer-modified-p a) (not (buffer-modified-p b))))
 
-(defun buffer-list-files-writable-first ()
-  (sort (buffer-list-files) #'sort-predicate-is-writable))
+(defun buffer-list-shell-mode-running-first (&optional buffer-list)
+  (sort (or buffer-list (buffer-list-shell-mode)) #'sort-predicate-has-process))
+
+(defun buffer-list-files-writable-first (&optional buffer-list)
+  (sort (or buffer-list (buffer-list-files)) #'sort-predicate-writable))
+
+(defun buffer-list-files-modified-first (&optional buffer-list)
+  (sort (or buffer-list (buffer-list-files)) #'sort-predicate-modified))
+
+(defun buffer-list-files-modified-writable-first (&optional buffer-list)
+  (sort (or buffer-list (buffer-list-files))
+        (lambda (a b)
+          (let ((m (sort-predicate-modified a b))
+                (w (sort-predicate-writable a b)))
+            (or (and m w) m w)))))
 
 (defun list-shells (&optional arg)
   (interactive "P")
-  (let* ((buffers (if arg (buffer-list-files-writable-first) (buffer-list-shell-mode-running-first)))
+  (let* ((buffers (if arg (buffer-list-files-modified-writable-first)  (buffer-list-shell-mode-running-first)))
          (buffer-list (list-buffers-noselect nil buffers))
          (column-title (if arg "Buffer (files only, writable first)" "Buffer (shells only, running first)")))
     (when buffers

@@ -13,7 +13,9 @@ dependencies.
 
 Use =M-x org-babel-tangle= to generate =init.el=.
 
+
 * Preamble
+
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   ;; -*- mode:emacs-lisp; coding:utf-8-unix; lexical-binding:t -*-
@@ -40,6 +42,7 @@ Use =M-x org-babel-tangle= to generate =init.el=.
 
 * Some Improvements
 
+
 - https://www.sandeepnambiar.com/my-minimal-emacs-setup/
 
 - As of 27.1.50:
@@ -49,12 +52,13 @@ Use =M-x org-babel-tangle= to generate =init.el=.
   - large-file-warning-threshold :: 10000000 (#o46113200, #x989680)
 
 #+begin_src emacs-lisp :tangle init.el
-  (setq gc-cons-threshold 50000000)
+  (setq gc-cons-threshold 10000000)
   (setq large-file-warning-threshold 100000000)
 #+end_src
 
 
 * Cd to a more convenient place
+
 
 On MS Windows =emacs_dir= is a special variable, see [[info:emacs#Misc Variables][Misc Variables]]
 for more information.
@@ -67,10 +71,14 @@ for more information.
 
 * Remove distractions
 
+
 Taken from [[http://whattheemacsd.com/][whattheemacsd.com]] and [[https://www.sandeepnambiar.com/my-minimal-emacs-setup/][www.sandeepnambiar.com]].
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (if (fboundp 'menu-bar-mode) (menu-bar-mode 0))
+  ;; enable (menu is didactic)
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode))
+
+  ;; disable
   (if (fboundp 'tool-bar-mode) (tool-bar-mode 0))
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
 #+END_SRC
@@ -85,13 +93,14 @@ Taken from [[http://whattheemacsd.com/][whattheemacsd.com]] and [[https://www.sa
 
 * Tabs or spaces? Spaces!
 
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (setq indent-tabs-mode nil)
   (setq-default indent-tabs-mode nil)
 #+END_SRC
 
 
 * Original value of 70 is a bit too narrow
+
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (set-fill-column 90)
@@ -99,6 +108,7 @@ Taken from [[http://whattheemacsd.com/][whattheemacsd.com]] and [[https://www.sa
 
 
 * Set some important environment variables
+
 
 https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using-a-pager/2183920
 
@@ -118,6 +128,7 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
 
 * Customization
 
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (custom-set-variables
    ;; custom-set-variables was added by Custom.
@@ -134,6 +145,7 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
 
 
 * Load 'wombat theme
+
 
 It is such a nice theme.
 
@@ -160,6 +172,7 @@ See also:
 
 * Highlight Selected Window
 
+
 - https://emacs.stackexchange.com/questions/24630/is-there-a-way-to-change-color-of-active-windows-fringe
 
 - TODO: highlight-selected-window is not maintaining text-scale adjustment (C-x C-=)
@@ -179,6 +192,7 @@ See also:
 
 ** Testing
 
+
 #+begin_src emacs-lisp
   (view-echo-area-messages)
   (describe-function 'stringp)
@@ -187,6 +201,7 @@ See also:
 
 
 * IDO
+
 
 IDO will save you a lot of time in finding files and buffers, use
 =C-f= (after =C-x C-f=) and =C-b= (after =C-x b=) to fall back to
@@ -207,6 +222,7 @@ See also:
 
 
 * Show Trailing Whitespaces
+
 
 Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
@@ -232,6 +248,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
 ** Better ellipsis
 
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
   ;;(setq org-ellipsis " ● ● ●")
   ;;(setq org-ellipsis " ○ ○ ○")
@@ -240,6 +257,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
 
 ** Some nice settings
+
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   ;; (info-other-window "(org) Clean view")
@@ -250,6 +268,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
 ** Pre-load org and some org-babel modules useful for org-babel-tangle
 
+
 #+begin_src emacs-lisp :tangle init.el
   (require 'org)
   (message "Using Org (org-mode) version %s" (org-version))
@@ -259,6 +278,7 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
 
 
 * Nice Utilities and Key Bindings
+
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (defun dos2unix ()
@@ -311,8 +331,10 @@ Listing of pop-to-ansi-term-* usage examples.
 Useful shortcuts:
 
 - C-x C-j :: switch ansi-term to line-mode
-  
+
 - C-c C-k :: switch ansi-term to char-mode
+
+Usage examples:
 
 #+BEGIN_SRC emacs-lisp
   (require 'term)
@@ -344,6 +366,8 @@ more future proof and sane approach.
     (setq shell-command-switch "-ic"))
 
   (require 'shell) ;; define shell and comint variables
+
+  ;; TODO: error if 'where does not exist
   (defun create-custom-shell (program shell-args where echoes force-new)
     "versatile custom shell creation"
     (let* ((where (expand-file-name where))
@@ -369,10 +393,14 @@ more future proof and sane approach.
     (let* ((default-directory where))
       (create-custom-shell "zsh" '("-lV") where t force-new)))
 
+  (defalias 'zsh #'create-zsh-shell)
+
   (defun create-bash-shell (where &optional force-new)
     (interactive "DWhere? \nP")
     (let* ((default-directory where))
       (create-custom-shell "bash" '("-l") where nil force-new)))
+
+  (defalias 'bash #'create-bash-shell)
 
   (defun buffer-list-shell-mode ()
     (seq-filter (lambda (b) (eq 'shell-mode (buffer-local-value 'major-mode b))) (buffer-list)))
@@ -380,21 +408,37 @@ more future proof and sane approach.
   (defun buffer-list-files ()
     (seq-filter #'buffer-file-name (buffer-list)))
 
+  (defun z--buffer-is-writable-p (buf)
+    (not (buffer-local-value 'buffer-read-only buf)))
+
   (defun sort-predicate-has-process (a b)
     (and (get-buffer-process a) (not (get-buffer-process b))))
 
-  (defun sort-predicate-is-writable (a b)
-    (not (buffer-local-value 'buffer-read-only a)))
+  (defun sort-predicate-writable (a b)
+    (and (z--buffer-is-writable-p a) (not (z--buffer-is-writable-p b))))
 
-  (defun buffer-list-shell-mode-running-first ()
-    (sort (buffer-list-shell-mode) #'sort-predicate-has-process))
+  (defun sort-predicate-modified (a b)
+    (and (buffer-modified-p a) (not (buffer-modified-p b))))
 
-  (defun buffer-list-files-writable-first ()
-    (sort (buffer-list-files) #'sort-predicate-is-writable))
+  (defun buffer-list-shell-mode-running-first (&optional buffer-list)
+    (sort (or buffer-list (buffer-list-shell-mode)) #'sort-predicate-has-process))
+
+  (defun buffer-list-files-writable-first (&optional buffer-list)
+    (sort (or buffer-list (buffer-list-files)) #'sort-predicate-writable))
+
+  (defun buffer-list-files-modified-first (&optional buffer-list)
+    (sort (or buffer-list (buffer-list-files)) #'sort-predicate-modified))
+
+  (defun buffer-list-files-modified-writable-first (&optional buffer-list)
+    (sort (or buffer-list (buffer-list-files))
+          (lambda (a b)
+            (let ((m (sort-predicate-modified a b))
+                  (w (sort-predicate-writable a b)))
+              (or (and m w) m w)))))
 
   (defun list-shells (&optional arg)
     (interactive "P")
-    (let* ((buffers (if arg (buffer-list-files-writable-first) (buffer-list-shell-mode-running-first)))
+    (let* ((buffers (if arg (buffer-list-files-modified-writable-first)  (buffer-list-shell-mode-running-first)))
            (buffer-list (list-buffers-noselect nil buffers))
            (column-title (if arg "Buffer (files only, writable first)" "Buffer (shells only, running first)")))
       (when buffers
@@ -413,10 +457,12 @@ more future proof and sane approach.
 
 * Other (Sandeep Nambiar)
 
+
 - https://www.sandeepnambiar.com/my-minimal-emacs-setup/
 
 
 ** line numbers
+
 
 #+begin_src emacs-lisp :tangle init.el
   (global-hl-line-mode 0)
@@ -431,6 +477,7 @@ more future proof and sane approach.
 
 ** current file's name to model-line
 
+
 #+begin_src emacs-lisp :tangle init.el
   (setq frame-title-format
         '((:eval (if (buffer-file-name)
@@ -441,6 +488,7 @@ more future proof and sane approach.
 
 ** y-or-n for everything
 
+
 - https://www.emacswiki.org/emacs/YesOrNoP
 
 #+begin_src emacs-lisp :tangle init.el
@@ -449,6 +497,7 @@ more future proof and sane approach.
 
 
 * All Done!
+
 
 Just a simple debuging message.
 
@@ -465,6 +514,7 @@ Just a simple debuging message.
 
 
 * Automated Extraction
+
 
 See [[info:org#Batch%20execution][Batch Execution]].
 
