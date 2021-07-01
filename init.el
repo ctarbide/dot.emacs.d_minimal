@@ -173,14 +173,14 @@
 (defun create-zsh-shell (where &optional force-new)
   (interactive "DWhere? \nP")
   (let* ((default-directory where))
-    (create-custom-shell "zsh" '("-lV") where t force-new)))
+    (create-custom-shell "zsh" '("-iV") where t force-new)))
 
 (defalias 'zsh #'create-zsh-shell)
 
 (defun create-bash-shell (where &optional force-new)
   (interactive "DWhere? \nP")
   (let* ((default-directory where))
-    (create-custom-shell "bash" '("-l") where nil force-new)))
+    (create-custom-shell "bash" '("-i") where nil force-new)))
 
 (defalias 'bash #'create-bash-shell)
 
