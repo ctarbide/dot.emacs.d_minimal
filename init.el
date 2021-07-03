@@ -18,8 +18,10 @@
   (interactive)
   (setq kill-ring nil) (garbage-collect))
 
-(setq gc-cons-threshold 10000000)
-(setq large-file-warning-threshold 100000000)
+(when (<= gc-cons-threshold 800000)
+  (setq gc-cons-threshold 10000000))
+(when (<= large-file-warning-threshold 10000000)
+  (setq large-file-warning-threshold 100000000))
 
 (when (string-prefix-p (expand-file-name "bin" (getenv "emacs_dir")) default-directory t)
   (setq default-directory (expand-file-name "~")))
@@ -58,7 +60,16 @@
  '(inhibit-startup-screen t)
  '(show-paren-delay 0.0)
  '(show-paren-mode t)
- '(show-paren-when-point-inside-paren t))
+ '(show-paren-when-point-inside-paren t)
+ ;; '(org-ellipsis " ● ● ●")
+ ;; '(org-ellipsis " ○ ○ ○")
+ '(org-ellipsis " ◦◦◦")
+ '(org-hide-leading-stars t)
+ '(org-babel-load-languages
+   '((emacs-lisp . t)
+     (lisp . t)
+     (perl . t)
+     (shell . t))))
 
 (when (and (display-graphic-p) (equal custom-known-themes '(user changed)))
   (load-theme 'wombat t t)
@@ -85,19 +96,6 @@
                    (not (eq major-mode 'prodigy-mode))
                    (not (eq major-mode 'Info-mode)))
               (setq show-trailing-whitespace t))))
-
-;;(setq org-ellipsis " ● ● ●")
-;;(setq org-ellipsis " ○ ○ ○")
-(setq org-ellipsis " ◦◦◦")
-
-;; (info-other-window "(org) Clean view")
-(setq org-hide-leading-stars t)
-(setq org-indent-mode t)
-
-(require 'org)
-(message "Using Org (org-mode) version %s" (org-version))
-(require 'ob-shell nil t)
-(require 'ob-perl nil t)
 
 (defun dos2unix ()
   "CR-LF to LF"

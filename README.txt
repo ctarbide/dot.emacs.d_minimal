@@ -45,15 +45,13 @@ Use =M-x org-babel-tangle= to generate =init.el=.
 
 - https://www.sandeepnambiar.com/my-minimal-emacs-setup/
 
-- As of 27.1.50:
-
-  - gc-cons-threshold :: it was 800000 (#o3032400, #xc3500) bytes
-
-  - large-file-warning-threshold :: 10000000 (#o46113200, #x989680)
+- defaults are too low for a recent (2020) hardware
 
 #+begin_src emacs-lisp :tangle init.el
-  (setq gc-cons-threshold 10000000)
-  (setq large-file-warning-threshold 100000000)
+  (when (<= gc-cons-threshold 800000)
+    (setq gc-cons-threshold 10000000))
+  (when (<= large-file-warning-threshold 10000000)
+    (setq large-file-warning-threshold 100000000))
 #+end_src
 
 
@@ -129,6 +127,8 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
 * Customization
 
 
+- https://orgmode.org/manual/Languages.html#Languages
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (custom-set-variables
    ;; custom-set-variables was added by Custom.
@@ -140,7 +140,16 @@ https://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using
    '(inhibit-startup-screen t)
    '(show-paren-delay 0.0)
    '(show-paren-mode t)
-   '(show-paren-when-point-inside-paren t))
+   '(show-paren-when-point-inside-paren t)
+   ;; '(org-ellipsis " ● ● ●")
+   ;; '(org-ellipsis " ○ ○ ○")
+   '(org-ellipsis " ◦◦◦")
+   '(org-hide-leading-stars t)
+   '(org-babel-load-languages
+     '((emacs-lisp . t)
+       (lisp . t)
+       (perl . t)
+       (shell . t))))
 #+END_SRC
 
 
@@ -241,40 +250,6 @@ Found in [[https://github.com/mbriggs/.emacs.d-v3][M. Briggs dot files]].
                      (not (eq major-mode 'Info-mode)))
                 (setq show-trailing-whitespace t))))
 #+END_SRC
-
-
-* Org-Mode Customizations
-
-
-** Better ellipsis
-
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-  ;;(setq org-ellipsis " ● ● ●")
-  ;;(setq org-ellipsis " ○ ○ ○")
-  (setq org-ellipsis " ◦◦◦")
-#+END_SRC
-
-
-** Some nice settings
-
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-  ;; (info-other-window "(org) Clean view")
-  (setq org-hide-leading-stars t)
-  (setq org-indent-mode t)
-#+END_SRC
-
-
-** Pre-load org and some org-babel modules useful for org-babel-tangle
-
-
-#+begin_src emacs-lisp :tangle init.el
-  (require 'org)
-  (message "Using Org (org-mode) version %s" (org-version))
-  (require 'ob-shell nil t)
-  (require 'ob-perl nil t)
-#+end_src
 
 
 * Nice Utilities and Key Bindings
