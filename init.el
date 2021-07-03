@@ -18,6 +18,15 @@
   (interactive)
   (setq kill-ring nil) (garbage-collect))
 
+(defmacro z--defun-name-aware (name arglist &optional docstring &rest body)
+  (declare (doc-string 3) (indent 2))
+  (if (or (stringp docstring)
+          (eq 'interactive (car-safe docstring))
+          (eq 'declare (car-safe docstring)))
+      `(defun ,name ,arglist ,docstring (let ((defun-name ',name)) ,@body))
+    ;; assume docstring is part of the body
+    `(defun ,name ,arglist nil (let ((defun-name ',name)) ,docstring ,@body))))
+
 (when (<= gc-cons-threshold 800000)
   (setq gc-cons-threshold 10000000))
 (when (<= large-file-warning-threshold 10000000)
@@ -228,7 +237,15 @@
         (tabulated-list-print t)))
     (pop-to-buffer-same-window buffer-list)))
 
-(global-set-key (kbd "C-x x") #'create-zsh-shell)
+(z--defun-name-aware z--create-shell (where &optional force-new)
+  (interactive "DWhere? \nP")
+  (defalias defun-name
+    (if (equal 0 (call-process "which" nil nil nil "zsh"))
+        #'create-zsh-shell
+      #'create-bash-shell))
+  (funcall (symbol-function defun-name) where force-new))
+
+(global-set-key (kbd "C-x x") 'z--create-shell)
 
 ;; use 'T' twice (or 'g' once) in buffer list to list all buffers
 (global-set-key (kbd "C-x C-b") #'list-shells)
