@@ -14,6 +14,14 @@ dependencies.
 Use =M-x org-babel-tangle= to generate =init.el=.
 
 
+* Installation
+
+
+#+begin_src sh
+  git clone https://github.com/ctarbide/dot.emacs.d_minimal ~/.emacs.d
+#+end_src
+
+
 * Preamble
 
 
@@ -45,7 +53,7 @@ Use =M-x org-babel-tangle= to generate =init.el=.
             (eq 'declare (car-safe docstring)))
         `(defun ,name ,arglist ,docstring (let ((defun-name ',name)) ,@body))
       ;; assume docstring is part of the body
-      `(defun ,name ,arglist nil (let ((defun-name ',name)) ,docstring ,@body))))
+      `(defun ,name ,arglist (let ((defun-name ',name)) ,docstring ,@body))))
 #+END_SRC
 
 
@@ -460,7 +468,7 @@ more future proof and sane approach.
   (global-hl-line-mode 0)
   (line-number-mode)
   (global-display-line-numbers-mode 0)
-  (global-linum-mode)
+  (global-linum-mode 0)
   (column-number-mode)
   (size-indication-mode)
   (blink-cursor-mode)

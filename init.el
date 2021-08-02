@@ -25,7 +25,7 @@
           (eq 'declare (car-safe docstring)))
       `(defun ,name ,arglist ,docstring (let ((defun-name ',name)) ,@body))
     ;; assume docstring is part of the body
-    `(defun ,name ,arglist nil (let ((defun-name ',name)) ,docstring ,@body))))
+    `(defun ,name ,arglist (let ((defun-name ',name)) ,docstring ,@body))))
 
 (when (<= gc-cons-threshold 800000)
   (setq gc-cons-threshold 10000000))
@@ -253,7 +253,7 @@
 (global-hl-line-mode 0)
 (line-number-mode)
 (global-display-line-numbers-mode 0)
-(global-linum-mode)
+(global-linum-mode 0)
 (column-number-mode)
 (size-indication-mode)
 (blink-cursor-mode)
